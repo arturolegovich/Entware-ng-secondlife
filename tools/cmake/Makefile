@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=cmake
-PKG_VERSION:=3.9.3
+PKG_VERSION:=3.18.0
 PKG_CPE_ID:=cpe:/a:kitware:cmake
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://cmake.org/files/v3.9/ \
+PKG_SOURCE_URL:=https://cmake.org/files/v3.18/ \
 		https://fossies.org/linux/misc/
-PKG_HASH:=8eaf75e1e932159aae98ab5e7491499545554be62a08cbcbc7c75c84b999f28a
+PKG_HASH:=83b4ffcb9482a73961521d2bafe4a16df0168f03f56e6624c419c461e5317e29
 
 HOST_BUILD_PARALLEL:=1
 HOST_CONFIGURE_PARALLEL:=1
