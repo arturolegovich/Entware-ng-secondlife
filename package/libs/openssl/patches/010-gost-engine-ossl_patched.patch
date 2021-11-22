@@ -1,29 +1,7 @@
-diff --git a/.gitignore b/.gitignore
-new file mode 100644
-index 0000000..b0ef074
---- /dev/null
-+++ b/.gitignore
-@@ -0,0 +1,3 @@
-+
-+openssl_111g.diff
-+openssl_111g_obj.diff
-diff --git a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tmpl
-index 3a24d55..17daaa0 100644
---- a/Configurations/unix-Makefile.tmpl
-+++ b/Configurations/unix-Makefile.tmpl
-@@ -888,6 +888,7 @@ generate_crypto_objects:
-		crypto/objects/obj_mac.num \
-		crypto/objects/obj_xref.txt \
-		> crypto/objects/obj_xref.h )
-+	( cd $(SRCDIR);	cat crypto/objects/obj_compat.h >> include/openssl/obj_mac.h )
- 
- generate_crypto_conf:
-    ( cd $(SRCDIR); $(PERL) crypto/conf/keysets.pl \
-diff --git a/apps/cms.c b/apps/cms.c
-index 15edd67..db7a539 100644
---- a/apps/cms.c
-+++ b/apps/cms.c
-@@ -75,15 +75,16 @@ typedef enum OPTION_choice {
+diff -ru --unidirectional-new-file a/apps/cms.c b/apps/cms.c
+--- a/apps/cms.c	2020-04-21 16:22:39.000000000 +0400
++++ b/apps/cms.c	2021-11-22 17:59:12.328968531 +0400
+@@ -75,15 +75,16 @@
      OPT_NOSIGS, OPT_NO_CONTENT_VERIFY, OPT_NO_ATTR_VERIFY, OPT_INDEF,
      OPT_NOINDEF, OPT_CRLFEOL, OPT_NOOUT, OPT_RR_PRINT,
      OPT_RR_ALL, OPT_RR_FIRST, OPT_RCTFORM, OPT_CERTFILE, OPT_CAFILE,
@@ -43,7 +21,7 @@ index 15edd67..db7a539 100644
  } OPTION_CHOICE;
  
  const OPTIONS cms_options[] = {
-@@ -150,6 +151,8 @@ const OPTIONS cms_options[] = {
+@@ -150,6 +151,8 @@
       "Supply or override content for detached signature"},
      {"print", OPT_PRINT, '-',
       "For the -cmsout operation print out all fields of the CMS structure"},
@@ -52,7 +30,7 @@ index 15edd67..db7a539 100644
      {"secretkey", OPT_SECRETKEY, 's'},
      {"secretkeyid", OPT_SECRETKEYID, 's'},
      {"pwri_password", OPT_PWRI_PASSWORD, 's'},
-@@ -159,6 +162,7 @@ const OPTIONS cms_options[] = {
+@@ -159,6 +162,7 @@
      {"from", OPT_FROM, 's', "From address"},
      {"subject", OPT_SUBJECT, 's', "Subject"},
      {"signer", OPT_SIGNER, 's', "Signer certificate file"},
@@ -60,7 +38,7 @@ index 15edd67..db7a539 100644
      {"recip", OPT_RECIP, '<', "Recipient cert file for decryption"},
      {"certsout", OPT_CERTSOUT, '>', "Certificate output file"},
      {"md", OPT_MD, 's', "Digest algorithm to use when signing or resigning"},
-@@ -177,6 +181,7 @@ const OPTIONS cms_options[] = {
+@@ -177,6 +181,7 @@
  # ifndef OPENSSL_NO_DES
      {"des3-wrap", OPT_3DES_WRAP, '-', "Use 3DES-EDE to wrap key"},
  # endif
@@ -68,7 +46,7 @@ index 15edd67..db7a539 100644
  # ifndef OPENSSL_NO_ENGINE
      {"engine", OPT_ENGINE, 's', "Use engine e, possibly a hardware device"},
  # endif
-@@ -196,7 +201,7 @@ int cms_main(int argc, char **argv)
+@@ -196,7 +201,7 @@
      STACK_OF(OPENSSL_STRING) *rr_to = NULL, *rr_from = NULL;
      STACK_OF(OPENSSL_STRING) *sksigners = NULL, *skkeys = NULL;
      STACK_OF(X509) *encerts = NULL, *other = NULL;
@@ -77,7 +55,7 @@ index 15edd67..db7a539 100644
      X509_STORE *store = NULL;
      X509_VERIFY_PARAM *vpm = NULL;
      char *certfile = NULL, *keyfile = NULL, *contfile = NULL;
-@@ -204,7 +209,7 @@ int cms_main(int argc, char **argv)
+@@ -204,7 +209,7 @@
      char *certsoutfile = NULL;
      int noCAfile = 0, noCApath = 0;
      char *infile = NULL, *outfile = NULL, *rctfile = NULL;
@@ -86,7 +64,7 @@ index 15edd67..db7a539 100644
      char *to = NULL, *from = NULL, *subject = NULL, *prog;
      cms_key_param *key_first = NULL, *key_param = NULL;
      int flags = CMS_DETACHED, noout = 0, print = 0, keyidx = -1, vpmtouched = 0;
-@@ -406,6 +411,10 @@ int cms_main(int argc, char **argv)
+@@ -406,6 +411,10 @@
          case OPT_PRINT:
              noout = print = 1;
              break;
@@ -97,7 +75,7 @@ index 15edd67..db7a539 100644
          case OPT_SECRETKEY:
              if (secret_key != NULL) {
                  BIO_printf(bio_err, "Invalid key (supplied twice) %s\n",
-@@ -486,6 +495,9 @@ int cms_main(int argc, char **argv)
+@@ -486,6 +495,9 @@
              }
              signerfile = opt_arg();
              break;
@@ -107,7 +85,7 @@ index 15edd67..db7a539 100644
          case OPT_INKEY:
              /* If previous -inkey argument add signer to list */
              if (keyfile != NULL) {
-@@ -580,6 +592,10 @@ int cms_main(int argc, char **argv)
+@@ -580,6 +592,10 @@
          case OPT_AES256_WRAP:
              wrap_cipher = EVP_aes_256_wrap();
              break;
@@ -118,7 +96,7 @@ index 15edd67..db7a539 100644
          }
      }
      argc = opt_num_rest();
-@@ -687,11 +703,11 @@ int cms_main(int argc, char **argv)
+@@ -687,11 +703,11 @@
      }
  
      if (certfile != NULL) {
@@ -135,7 +113,7 @@ index 15edd67..db7a539 100644
      }
  
      if (recipfile != NULL && (operation == SMIME_DECRYPT)) {
-@@ -702,6 +718,15 @@ int cms_main(int argc, char **argv)
+@@ -702,6 +718,15 @@
          }
      }
  
@@ -151,7 +129,7 @@ index 15edd67..db7a539 100644
      if (operation == SMIME_SIGN_RECEIPT) {
          if ((signer = load_cert(signerfile, FORMAT_PEM,
                                  "receipt signer certificate file")) == NULL) {
-@@ -710,7 +735,8 @@ int cms_main(int argc, char **argv)
+@@ -710,7 +735,8 @@
          }
      }
  
@@ -161,7 +139,7 @@ index 15edd67..db7a539 100644
          if (keyfile == NULL)
              keyfile = recipfile;
      } else if ((operation == SMIME_SIGN) || (operation == SMIME_SIGN_RECEIPT)) {
-@@ -819,23 +845,31 @@ int cms_main(int argc, char **argv)
+@@ -819,23 +845,31 @@
          for (i = 0; i < sk_X509_num(encerts); i++) {
              CMS_RecipientInfo *ri;
              cms_key_param *kparam;
@@ -198,7 +176,7 @@ index 15edd67..db7a539 100644
              if (CMS_RecipientInfo_type(ri) == CMS_RECIPINFO_AGREE
                  && wrap_cipher) {
                  EVP_CIPHER_CTX *wctx;
-@@ -981,7 +1015,7 @@ int cms_main(int argc, char **argv)
+@@ -981,7 +1015,7 @@
          }
  
          if (key != NULL) {
@@ -207,7 +185,7 @@ index 15edd67..db7a539 100644
                  BIO_puts(bio_err, "Error decrypting CMS using private key\n");
                  goto end;
              }
-@@ -1047,8 +1081,19 @@ int cms_main(int argc, char **argv)
+@@ -1047,8 +1081,19 @@
          }
      } else {
          if (noout) {
@@ -229,11 +207,10 @@ index 15edd67..db7a539 100644
          } else if (outformat == FORMAT_SMIME) {
              if (to)
                  BIO_printf(out, "To: %s%s", to, mime_eol);
-diff --git a/apps/s_cb.c b/apps/s_cb.c
-index 6406ddf..698a3fb 100644
---- a/apps/s_cb.c
-+++ b/apps/s_cb.c
-@@ -684,7 +684,7 @@ static STRINT_PAIR tlsext_types[] = {
+diff -ru --unidirectional-new-file a/apps/s_cb.c b/apps/s_cb.c
+--- a/apps/s_cb.c	2020-04-21 16:22:39.000000000 +0400
++++ b/apps/s_cb.c	2021-11-22 17:59:12.328968531 +0400
+@@ -684,7 +684,7 @@
      {NULL}
  };
  
@@ -242,7 +219,7 @@ index 6406ddf..698a3fb 100644
  static STRINT_PAIR signature_tls13_scheme_list[] = {
      {"rsa_pkcs1_sha1",         0x0201 /* TLSEXT_SIGALG_rsa_pkcs1_sha1 */},
      {"ecdsa_sha1",             0x0203 /* TLSEXT_SIGALG_ecdsa_sha1 */},
-@@ -696,6 +696,13 @@ static STRINT_PAIR signature_tls13_scheme_list[] = {
+@@ -696,6 +696,13 @@
      {"ecdsa_secp384r1_sha384", 0x0503 /* TLSEXT_SIGALG_ecdsa_secp384r1_sha384 */},
      {"rsa_pkcs1_sha512",       0x0601 /* TLSEXT_SIGALG_rsa_pkcs1_sha512 */},
      {"ecdsa_secp521r1_sha512", 0x0603 /* TLSEXT_SIGALG_ecdsa_secp521r1_sha512 */},
@@ -256,7 +233,7 @@ index 6406ddf..698a3fb 100644
      {"rsa_pss_rsae_sha256",    0x0804 /* TLSEXT_SIGALG_rsa_pss_rsae_sha256 */},
      {"rsa_pss_rsae_sha384",    0x0805 /* TLSEXT_SIGALG_rsa_pss_rsae_sha384 */},
      {"rsa_pss_rsae_sha512",    0x0806 /* TLSEXT_SIGALG_rsa_pss_rsae_sha512 */},
-@@ -704,9 +711,6 @@ static STRINT_PAIR signature_tls13_scheme_list[] = {
+@@ -704,9 +711,6 @@
      {"rsa_pss_pss_sha256",     0x0809 /* TLSEXT_SIGALG_rsa_pss_pss_sha256 */},
      {"rsa_pss_pss_sha384",     0x080a /* TLSEXT_SIGALG_rsa_pss_pss_sha384 */},
      {"rsa_pss_pss_sha512",     0x080b /* TLSEXT_SIGALG_rsa_pss_pss_sha512 */},
@@ -266,11 +243,21 @@ index 6406ddf..698a3fb 100644
      {NULL}
  };
  
-diff --git a/crypto/asn1/p8_pkey.c b/crypto/asn1/p8_pkey.c
-index ab509b1..e90b302 100644
---- a/crypto/asn1/p8_pkey.c
-+++ b/crypto/asn1/p8_pkey.c
-@@ -78,3 +78,18 @@ int PKCS8_pkey_add1_attr_by_NID(PKCS8_PRIV_KEY_INFO *p8, int nid, int type,
+diff -ru --unidirectional-new-file a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tmpl
+--- a/Configurations/unix-Makefile.tmpl	2020-04-21 16:22:39.000000000 +0400
++++ b/Configurations/unix-Makefile.tmpl	2021-11-22 17:59:12.368969720 +0400
+@@ -888,6 +888,7 @@
+ 				crypto/objects/obj_mac.num \
+ 				crypto/objects/obj_xref.txt \
+ 				> crypto/objects/obj_xref.h )
++	( cd $(SRCDIR);	cat crypto/objects/obj_compat.h >> include/openssl/obj_mac.h )
+ 
+ generate_crypto_conf:
+ 	( cd $(SRCDIR); $(PERL) crypto/conf/keysets.pl \
+diff -ru --unidirectional-new-file a/crypto/asn1/p8_pkey.c b/crypto/asn1/p8_pkey.c
+--- a/crypto/asn1/p8_pkey.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/asn1/p8_pkey.c	2021-11-22 17:59:12.352969245 +0400
+@@ -78,3 +78,18 @@
          return 1;
      return 0;
  }
@@ -289,10 +276,9 @@ index ab509b1..e90b302 100644
 +        return 1;
 +    return 0;
 +}
-diff --git a/crypto/cms/cms_env.c b/crypto/cms/cms_env.c
-index 0494014..3591ff0 100644
---- a/crypto/cms/cms_env.c
-+++ b/crypto/cms/cms_env.c
+diff -ru --unidirectional-new-file a/crypto/cms/cms_env.c b/crypto/cms/cms_env.c
+--- a/crypto/cms/cms_env.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_env.c	2021-11-22 17:59:12.328968531 +0400
 @@ -20,6 +20,8 @@
  
  /* CMS EnvelopedData Utilities */
@@ -302,7 +288,7 @@ index 0494014..3591ff0 100644
  CMS_EnvelopedData *cms_get0_enveloped(CMS_ContentInfo *cms)
  {
      if (OBJ_obj2nid(cms->contentType) != NID_pkcs7_enveloped) {
-@@ -121,6 +123,39 @@ CMS_ContentInfo *CMS_EnvelopedData_create(const EVP_CIPHER *cipher)
+@@ -121,6 +123,39 @@
      return NULL;
  }
  
@@ -342,7 +328,7 @@ index 0494014..3591ff0 100644
  /* Key Transport Recipient Info (KTRI) routines */
  
  /* Initialise a ktri based on passed certificate and key */
-@@ -175,8 +210,8 @@ static int cms_RecipientInfo_ktri_init(CMS_RecipientInfo *ri, X509 *recip,
+@@ -175,8 +210,8 @@
   * Add a recipient certificate using appropriate type of RecipientInfo
   */
  
@@ -353,7 +339,7 @@ index 0494014..3591ff0 100644
  {
      CMS_RecipientInfo *ri = NULL;
      CMS_EnvelopedData *env;
-@@ -192,7 +227,7 @@ CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
+@@ -192,7 +227,7 @@
  
      pk = X509_get0_pubkey(recip);
      if (!pk) {
@@ -362,7 +348,7 @@ index 0494014..3591ff0 100644
          goto err;
      }
  
-@@ -204,12 +239,12 @@ CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
+@@ -204,12 +239,12 @@
          break;
  
      case CMS_RECIPINFO_AGREE:
@@ -377,7 +363,7 @@ index 0494014..3591ff0 100644
                 CMS_R_NOT_SUPPORTED_FOR_THIS_KEY_TYPE);
          goto err;
  
-@@ -221,13 +256,19 @@ CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
+@@ -221,13 +256,19 @@
      return ri;
  
   merr:
@@ -398,7 +384,7 @@ index 0494014..3591ff0 100644
  int CMS_RecipientInfo_ktri_get0_algs(CMS_RecipientInfo *ri,
                                       EVP_PKEY **pk, X509 **recip,
                                       X509_ALGOR **palg)
-@@ -856,50 +897,88 @@ static void cms_env_set_version(CMS_EnvelopedData *env)
+@@ -856,52 +897,90 @@
      env->version = 0;
  }
  
@@ -482,7 +468,7 @@ index 0494014..3591ff0 100644
 -    BIO_free(ret);
 -    return NULL;
 +     rinfos = cms->d.envelopedData->recipientInfos;
- 
++
 +     for (i = 0; i < sk_CMS_RecipientInfo_num(rinfos); i++) {
 +          ri = sk_CMS_RecipientInfo_value(rinfos, i);
 +          if (CMS_RecipientInfo_encrypt(cms, ri) <= 0) {
@@ -504,9 +490,9 @@ index 0494014..3591ff0 100644
 +          return ret;
 +     BIO_free(ret);
 +     return NULL;
-+
-+}
-+
+ 
+ }
+ 
 +BIO *cms_EnvelopedData_init_bio(CMS_ContentInfo *cms)
 +{
 +     if (cms->d.envelopedData->encryptedContentInfo->cipher)
@@ -517,10 +503,12 @@ index 0494014..3591ff0 100644
 +
 +     //If cipher is not set it's decrypting
 +     return cms_EnvelopedData_Decryption_init_bio(cms);
- }
- 
++}
++
  /*
-@@ -917,3 +996,25 @@ int cms_pkey_get_ri_type(EVP_PKEY *pk)
+  * Get RecipientInfo type (if any) supported by a key (public or private). To
+  * retain compatibility with previous behaviour if the ctrl value isn't
+@@ -917,3 +996,25 @@
      }
      return CMS_RECIPINFO_TRANS;
  }
@@ -546,11 +534,10 @@ index 0494014..3591ff0 100644
 +
 +     return (supportedRiType == ri_type);
 +}
-diff --git a/crypto/cms/cms_err.c b/crypto/cms/cms_err.c
-index a211f49..6bc8a3a 100644
---- a/crypto/cms/cms_err.c
-+++ b/crypto/cms/cms_err.c
-@@ -22,6 +22,7 @@ static const ERR_STRING_DATA CMS_str_functs[] = {
+diff -ru --unidirectional-new-file a/crypto/cms/cms_err.c b/crypto/cms/cms_err.c
+--- a/crypto/cms/cms_err.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_err.c	2021-11-22 17:59:12.328968531 +0400
+@@ -22,6 +22,7 @@
       "CMS_add0_recipient_password"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ADD1_RECEIPTREQUEST, 0),
       "CMS_add1_ReceiptRequest"},
@@ -558,7 +545,7 @@ index a211f49..6bc8a3a 100644
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ADD1_RECIPIENT_CERT, 0),
       "CMS_add1_recipient_cert"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ADD1_SIGNER, 0), "CMS_add1_signer"},
-@@ -45,6 +46,8 @@ static const ERR_STRING_DATA CMS_str_functs[] = {
+@@ -45,6 +46,8 @@
       "CMS_decrypt_set1_password"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_DECRYPT_SET1_PKEY, 0),
       "CMS_decrypt_set1_pkey"},
@@ -567,7 +554,7 @@ index a211f49..6bc8a3a 100644
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_DIGESTALGORITHM_FIND_CTX, 0),
       "cms_DigestAlgorithm_find_ctx"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_DIGESTALGORITHM_INIT_BIO, 0),
-@@ -66,6 +69,12 @@ static const ERR_STRING_DATA CMS_str_functs[] = {
+@@ -66,6 +69,12 @@
       "CMS_EncryptedData_set1_key"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ENVELOPEDDATA_CREATE, 0),
       "CMS_EnvelopedData_create"},
@@ -580,11 +567,10 @@ index a211f49..6bc8a3a 100644
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ENVELOPEDDATA_INIT_BIO, 0),
       "cms_EnvelopedData_init_bio"},
      {ERR_PACK(ERR_LIB_CMS, CMS_F_CMS_ENVELOPED_DATA_INIT, 0),
-diff --git a/crypto/cms/cms_kari.c b/crypto/cms/cms_kari.c
-index cafc304..eb11e42 100644
---- a/crypto/cms/cms_kari.c
-+++ b/crypto/cms/cms_kari.c
-@@ -152,7 +152,7 @@ int CMS_RecipientEncryptedKey_cert_cmp(CMS_RecipientEncryptedKey *rek,
+diff -ru --unidirectional-new-file a/crypto/cms/cms_kari.c b/crypto/cms/cms_kari.c
+--- a/crypto/cms/cms_kari.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_kari.c	2021-11-22 17:59:12.328968531 +0400
+@@ -152,7 +152,7 @@
          return -1;
  }
  
@@ -593,7 +579,7 @@ index cafc304..eb11e42 100644
  {
      EVP_PKEY_CTX *pctx;
      CMS_KeyAgreeRecipientInfo *kari = ri->d.kari;
-@@ -164,6 +164,16 @@ int CMS_RecipientInfo_kari_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pk)
+@@ -164,6 +164,16 @@
      pctx = EVP_PKEY_CTX_new(pk, NULL);
      if (!pctx || EVP_PKEY_derive_init(pctx) <= 0)
          goto err;
@@ -610,7 +596,7 @@ index cafc304..eb11e42 100644
      kari->pctx = pctx;
      return 1;
   err:
-@@ -171,6 +181,11 @@ int CMS_RecipientInfo_kari_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pk)
+@@ -171,6 +181,11 @@
      return 0;
  }
  
@@ -622,7 +608,7 @@ index cafc304..eb11e42 100644
  EVP_CIPHER_CTX *CMS_RecipientInfo_kari_get0_ctx(CMS_RecipientInfo *ri)
  {
      if (ri->type == CMS_RECIPINFO_AGREE)
-@@ -282,10 +297,27 @@ static int cms_kari_create_ephemeral_key(CMS_KeyAgreeRecipientInfo *kari,
+@@ -282,10 +297,27 @@
      return rv;
  }
  
@@ -652,7 +638,7 @@ index cafc304..eb11e42 100644
  {
      CMS_KeyAgreeRecipientInfo *kari;
      CMS_RecipientEncryptedKey *rek = NULL;
-@@ -320,12 +352,45 @@ int cms_RecipientInfo_kari_init(CMS_RecipientInfo *ri, X509 *recip,
+@@ -320,12 +352,45 @@
              return 0;
      }
  
@@ -703,7 +689,7 @@ index cafc304..eb11e42 100644
      return 1;
  }
  
-@@ -335,14 +400,35 @@ static int cms_wrap_init(CMS_KeyAgreeRecipientInfo *kari,
+@@ -335,14 +400,35 @@
      EVP_CIPHER_CTX *ctx = kari->ctx;
      const EVP_CIPHER *kekcipher;
      int keylen = EVP_CIPHER_key_length(cipher);
@@ -720,7 +706,7 @@ index cafc304..eb11e42 100644
 +         if (EVP_CIPHER_CTX_mode(ctx) != EVP_CIPH_WRAP_MODE)
 +              return 0;
 +         return 1;
-     }
++    }
 +		/* Here the Infotecs patch begins */
 +    else if (cipher && (EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_GET_WRAP_CIPHER))
 +    {
@@ -737,17 +723,16 @@ index cafc304..eb11e42 100644
 +
 +              return EVP_EncryptInit_ex(ctx, kekcipher, NULL, NULL, NULL);
 +         }
-+    }
+     }
 +		/* Here the Infotecs patch ends */
 +
      /*
       * Pick a cipher based on content encryption cipher. If it is DES3 use
       * DES3 wrap otherwise use AES wrap similar to key size.
-diff --git a/crypto/cms/cms_lib.c b/crypto/cms/cms_lib.c
-index 57afba4..1e73f23 100644
---- a/crypto/cms/cms_lib.c
-+++ b/crypto/cms/cms_lib.c
-@@ -130,12 +130,14 @@ int CMS_dataFinal(CMS_ContentInfo *cms, BIO *cmsbio)
+diff -ru --unidirectional-new-file a/crypto/cms/cms_lib.c b/crypto/cms/cms_lib.c
+--- a/crypto/cms/cms_lib.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_lib.c	2021-11-22 17:59:12.328968531 +0400
+@@ -130,12 +130,14 @@
      switch (OBJ_obj2nid(cms->contentType)) {
  
      case NID_pkcs7_data:
@@ -763,11 +748,10 @@ index 57afba4..1e73f23 100644
      case NID_pkcs7_signed:
          return cms_SignedData_final(cms, cmsbio);
  
-diff --git a/crypto/cms/cms_local.h b/crypto/cms/cms_local.h
-index a0ce444..27261b7 100644
---- a/crypto/cms/cms_local.h
-+++ b/crypto/cms/cms_local.h
-@@ -403,12 +403,13 @@ int cms_msgSigDigest_add1(CMS_SignerInfo *dest, CMS_SignerInfo *src);
+diff -ru --unidirectional-new-file a/crypto/cms/cms_local.h b/crypto/cms/cms_local.h
+--- a/crypto/cms/cms_local.h	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_local.h	2021-11-22 17:59:12.328968531 +0400
+@@ -403,12 +403,13 @@
  ASN1_OCTET_STRING *cms_encode_Receipt(CMS_SignerInfo *si);
  
  BIO *cms_EnvelopedData_init_bio(CMS_ContentInfo *cms);
@@ -783,11 +767,10 @@ index a0ce444..27261b7 100644
  int cms_RecipientInfo_kari_encrypt(CMS_ContentInfo *cms,
                                     CMS_RecipientInfo *ri);
  
-diff --git a/crypto/cms/cms_smime.c b/crypto/cms/cms_smime.c
-index 652e97b..a12c77e 100644
---- a/crypto/cms/cms_smime.c
-+++ b/crypto/cms/cms_smime.c
-@@ -576,8 +576,8 @@ CMS_ContentInfo *CMS_encrypt(STACK_OF(X509) *certs, BIO *data,
+diff -ru --unidirectional-new-file a/crypto/cms/cms_smime.c b/crypto/cms/cms_smime.c
+--- a/crypto/cms/cms_smime.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/cms/cms_smime.c	2021-11-22 17:59:12.328968531 +0400
+@@ -576,8 +576,8 @@
      return NULL;
  }
  
@@ -798,7 +781,7 @@ index 652e97b..a12c77e 100644
  {
      int i;
      STACK_OF(CMS_RecipientEncryptedKey) *reks;
-@@ -588,7 +588,7 @@ static int cms_kari_set1_pkey(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
+@@ -588,7 +588,7 @@
          rek = sk_CMS_RecipientEncryptedKey_value(reks, i);
          if (cert != NULL && CMS_RecipientEncryptedKey_cert_cmp(rek, cert))
              continue;
@@ -807,16 +790,15 @@ index 652e97b..a12c77e 100644
          rv = CMS_RecipientInfo_kari_decrypt(cms, ri, rek);
          CMS_RecipientInfo_kari_set0_pkey(ri, NULL);
          if (rv > 0)
-@@ -599,28 +599,36 @@ static int cms_kari_set1_pkey(CMS_ContentInfo *cms, CMS_RecipientInfo *ri,
- }
+@@ -600,27 +600,35 @@
  
  int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert)
-+{
+ {
 +     return CMS_decrypt_set1_pkey_and_peer(cms, pk, cert, NULL);
 +}
 +
 +int CMS_decrypt_set1_pkey_and_peer(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert, X509 *peer)
- {
++{
      STACK_OF(CMS_RecipientInfo) *ris;
      CMS_RecipientInfo *ri;
 -    int i, r, ri_type;
@@ -853,7 +835,7 @@ index 652e97b..a12c77e 100644
              if (r > 0)
                  return 1;
              if (r < 0)
-@@ -640,13 +648,13 @@ int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert)
+@@ -640,13 +648,13 @@
                   * If not debugging clear any error and return success to
                   * avoid leaking of information useful to MMA
                   */
@@ -869,7 +851,7 @@ index 652e97b..a12c77e 100644
                  return 0;
              }
              /*
-@@ -654,17 +662,17 @@ int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert)
+@@ -654,17 +662,17 @@
               * successful decrypt. Always attempt to decrypt all recipients
               * to avoid leaking timing of a successful decrypt.
               */
@@ -890,11 +872,10 @@ index 652e97b..a12c77e 100644
      return 0;
  
  }
-diff --git a/crypto/err/openssl.txt b/crypto/err/openssl.txt
-index 35512f9..a5ebac4 100644
---- a/crypto/err/openssl.txt
-+++ b/crypto/err/openssl.txt
-@@ -239,6 +239,7 @@ CMS_F_CMS_ADD0_CERT:164:CMS_add0_cert
+diff -ru --unidirectional-new-file a/crypto/err/openssl.txt b/crypto/err/openssl.txt
+--- a/crypto/err/openssl.txt	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/err/openssl.txt	2021-11-22 17:59:12.348969126 +0400
+@@ -239,6 +239,7 @@
  CMS_F_CMS_ADD0_RECIPIENT_KEY:100:CMS_add0_recipient_key
  CMS_F_CMS_ADD0_RECIPIENT_PASSWORD:165:CMS_add0_recipient_password
  CMS_F_CMS_ADD1_RECEIPTREQUEST:158:CMS_add1_ReceiptRequest
@@ -902,7 +883,7 @@ index 35512f9..a5ebac4 100644
  CMS_F_CMS_ADD1_RECIPIENT_CERT:101:CMS_add1_recipient_cert
  CMS_F_CMS_ADD1_SIGNER:102:CMS_add1_signer
  CMS_F_CMS_ADD1_SIGNINGTIME:103:cms_add1_signingTime
-@@ -254,6 +255,7 @@ CMS_F_CMS_DECRYPT:112:CMS_decrypt
+@@ -254,6 +255,7 @@
  CMS_F_CMS_DECRYPT_SET1_KEY:113:CMS_decrypt_set1_key
  CMS_F_CMS_DECRYPT_SET1_PASSWORD:166:CMS_decrypt_set1_password
  CMS_F_CMS_DECRYPT_SET1_PKEY:114:CMS_decrypt_set1_pkey
@@ -910,7 +891,7 @@ index 35512f9..a5ebac4 100644
  CMS_F_CMS_DIGESTALGORITHM_FIND_CTX:115:cms_DigestAlgorithm_find_ctx
  CMS_F_CMS_DIGESTALGORITHM_INIT_BIO:116:cms_DigestAlgorithm_init_bio
  CMS_F_CMS_DIGESTEDDATA_DO_FINAL:117:cms_DigestedData_do_final
-@@ -266,6 +268,11 @@ CMS_F_CMS_ENCRYPTEDDATA_DECRYPT:121:CMS_EncryptedData_decrypt
+@@ -266,6 +268,11 @@
  CMS_F_CMS_ENCRYPTEDDATA_ENCRYPT:122:CMS_EncryptedData_encrypt
  CMS_F_CMS_ENCRYPTEDDATA_SET1_KEY:123:CMS_EncryptedData_set1_key
  CMS_F_CMS_ENVELOPEDDATA_CREATE:124:CMS_EnvelopedData_create
@@ -922,16 +903,16 @@ index 35512f9..a5ebac4 100644
  CMS_F_CMS_ENVELOPEDDATA_INIT_BIO:125:cms_EnvelopedData_init_bio
  CMS_F_CMS_ENVELOPED_DATA_INIT:126:cms_enveloped_data_init
  CMS_F_CMS_ENV_ASN1_CTRL:171:cms_env_asn1_ctrl
-@@ -1180,7 +1187,7 @@ SSL_F_OSSL_STATEM_SERVER_CONSTRUCT_MESSAGE:431:*
+@@ -1180,7 +1187,7 @@
  SSL_F_OSSL_STATEM_SERVER_POST_PROCESS_MESSAGE:601:\
-    ossl_statem_server_post_process_message
+ 	ossl_statem_server_post_process_message
  SSL_F_OSSL_STATEM_SERVER_POST_WORK:602:ossl_statem_server_post_work
 -SSL_F_OSSL_STATEM_SERVER_PRE_WORK:640:
 +SSL_F_OSSL_STATEM_SERVER_PRE_WORK:640:ossl_statem_server_pre_work
  SSL_F_OSSL_STATEM_SERVER_PROCESS_MESSAGE:603:ossl_statem_server_process_message
  SSL_F_OSSL_STATEM_SERVER_READ_TRANSITION:418:ossl_statem_server_read_transition
  SSL_F_OSSL_STATEM_SERVER_WRITE_TRANSITION:604:\
-@@ -1395,6 +1402,7 @@ SSL_F_TLS_CONSTRUCT_CHANGE_CIPHER_SPEC:427:tls_construct_change_cipher_spec
+@@ -1395,6 +1402,7 @@
  SSL_F_TLS_CONSTRUCT_CKE_DHE:404:tls_construct_cke_dhe
  SSL_F_TLS_CONSTRUCT_CKE_ECDHE:405:tls_construct_cke_ecdhe
  SSL_F_TLS_CONSTRUCT_CKE_GOST:406:tls_construct_cke_gost
@@ -939,7 +920,7 @@ index 35512f9..a5ebac4 100644
  SSL_F_TLS_CONSTRUCT_CKE_PSK_PREAMBLE:407:tls_construct_cke_psk_preamble
  SSL_F_TLS_CONSTRUCT_CKE_RSA:409:tls_construct_cke_rsa
  SSL_F_TLS_CONSTRUCT_CKE_SRP:410:tls_construct_cke_srp
-@@ -1526,6 +1534,7 @@ SSL_F_TLS_PROCESS_CHANGE_CIPHER_SPEC:363:tls_process_change_cipher_spec
+@@ -1526,6 +1534,7 @@
  SSL_F_TLS_PROCESS_CKE_DHE:411:tls_process_cke_dhe
  SSL_F_TLS_PROCESS_CKE_ECDHE:412:tls_process_cke_ecdhe
  SSL_F_TLS_PROCESS_CKE_GOST:413:tls_process_cke_gost
@@ -947,7 +928,7 @@ index 35512f9..a5ebac4 100644
  SSL_F_TLS_PROCESS_CKE_PSK_PREAMBLE:414:tls_process_cke_psk_preamble
  SSL_F_TLS_PROCESS_CKE_RSA:415:tls_process_cke_rsa
  SSL_F_TLS_PROCESS_CKE_SRP:416:tls_process_cke_srp
-@@ -1648,6 +1657,7 @@ X509V3_F_GNAMES_FROM_SECTNAME:156:gnames_from_sectname
+@@ -1648,6 +1657,7 @@
  X509V3_F_I2S_ASN1_ENUMERATED:121:i2s_ASN1_ENUMERATED
  X509V3_F_I2S_ASN1_IA5STRING:149:i2s_ASN1_IA5STRING
  X509V3_F_I2S_ASN1_INTEGER:120:i2s_ASN1_INTEGER
@@ -955,7 +936,7 @@ index 35512f9..a5ebac4 100644
  X509V3_F_I2V_AUTHORITY_INFO_ACCESS:138:i2v_AUTHORITY_INFO_ACCESS
  X509V3_F_LEVEL_ADD_NODE:168:level_add_node
  X509V3_F_NOTICE_SECTION:132:notice_section
-@@ -1662,6 +1672,7 @@ X509V3_F_R2I_PCI:155:r2i_pci
+@@ -1662,6 +1672,7 @@
  X509V3_F_S2I_ASN1_IA5STRING:100:s2i_ASN1_IA5STRING
  X509V3_F_S2I_ASN1_INTEGER:108:s2i_ASN1_INTEGER
  X509V3_F_S2I_ASN1_OCTET_STRING:112:s2i_ASN1_OCTET_STRING
@@ -963,11 +944,9 @@ index 35512f9..a5ebac4 100644
  X509V3_F_S2I_SKEY_ID:115:s2i_skey_id
  X509V3_F_SET_DIST_POINT_NAME:158:set_dist_point_name
  X509V3_F_SXNET_ADD_ID_ASC:125:SXNET_add_id_asc
-diff --git a/crypto/objects/obj_compat.h b/crypto/objects/obj_compat.h
-new file mode 100644
-index 0000000..68d1d73
---- /dev/null
-+++ b/crypto/objects/obj_compat.h
+diff -ru --unidirectional-new-file a/crypto/objects/obj_compat.h b/crypto/objects/obj_compat.h
+--- a/crypto/objects/obj_compat.h	1970-01-01 04:00:00.000000000 +0400
++++ b/crypto/objects/obj_compat.h	2021-11-22 17:59:24.045316756 +0400
 @@ -0,0 +1,46 @@
 +
 +#ifndef OPENSSL_NO_DEPRECATED_3_0
@@ -1015,10 +994,9 @@ index 0000000..68d1d73
 +#define NID_grasshopper_mac             NID_kuznyechik_mac
 +
 +#endif
-diff --git a/crypto/objects/obj_dat.h b/crypto/objects/obj_dat.h
-index d1b1bc7..d8082b5 100644
---- a/crypto/objects/obj_dat.h
-+++ b/crypto/objects/obj_dat.h
+diff -ru --unidirectional-new-file a/crypto/objects/obj_dat.h b/crypto/objects/obj_dat.h
+--- a/crypto/objects/obj_dat.h	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/objects/obj_dat.h	2021-11-22 17:59:24.049316875 +0400
 @@ -2,7 +2,7 @@
   * WARNING: do not edit!
   * Generated by crypto/objects/obj_dat.pl
@@ -1037,7 +1015,7 @@ index d1b1bc7..d8082b5 100644
      0x2A,0x86,0x48,0x86,0xF7,0x0D,                 /* [    0] OBJ_rsadsi */
      0x2A,0x86,0x48,0x86,0xF7,0x0D,0x01,            /* [    6] OBJ_pkcs */
      0x2A,0x86,0x48,0x86,0xF7,0x0D,0x02,0x02,       /* [   13] OBJ_md2 */
-@@ -1061,24 +1061,36 @@ static const unsigned char so[7762] = {
+@@ -1061,24 +1061,36 @@
      0x2B,0x6F,0x02,0x8C,0x53,                      /* [ 7612] OBJ_ieee_siswg */
      0x2A,0x81,0x1C,0xCF,0x55,0x01,0x82,0x2D,       /* [ 7617] OBJ_sm2 */
      0x2A,0x85,0x03,0x07,0x01,0x01,0x05,0x01,       /* [ 7625] OBJ_id_tc26_cipher_gostr3412_2015_magma */
@@ -1090,7 +1068,7 @@ index d1b1bc7..d8082b5 100644
  static const ASN1_OBJECT nid_objs[NUM_NID] = {
      {"UNDEF", "undefined", NID_undef},
      {"rsadsi", "RSA Data Security, Inc.", NID_rsadsi, 6, &so[0]},
-@@ -2092,12 +2104,12 @@ static const ASN1_OBJECT nid_objs[NUM_NID] = {
+@@ -2092,12 +2104,12 @@
      {"gost89-cbc", "gost89-cbc", NID_gost89_cbc},
      {"gost89-ecb", "gost89-ecb", NID_gost89_ecb},
      {"gost89-ctr", "gost89-ctr", NID_gost89_ctr},
@@ -1109,7 +1087,7 @@ index d1b1bc7..d8082b5 100644
      {"ChaCha20-Poly1305", "chacha20-poly1305", NID_chacha20_poly1305},
      {"ChaCha20", "chacha20", NID_chacha20},
      {"tlsfeature", "TLS Feature", NID_tlsfeature, 8, &so[6619]},
-@@ -2254,30 +2266,56 @@ static const ASN1_OBJECT nid_objs[NUM_NID] = {
+@@ -2254,30 +2266,56 @@
      {"ieee-siswg", "IEEE Security in Storage Working Group", NID_ieee_siswg, 5, &so[7612]},
      {"SM2", "sm2", NID_sm2, 8, &so[7617]},
      {"id-tc26-cipher-gostr3412-2015-magma", "id-tc26-cipher-gostr3412-2015-magma", NID_id_tc26_cipher_gostr3412_2015_magma, 8, &so[7625]},
@@ -1182,7 +1160,7 @@ index d1b1bc7..d8082b5 100644
  static const unsigned int sn_objs[NUM_SN] = {
       364,    /* "AD_DVCS" */
       419,    /* "AES-128-CBC" */
-@@ -2469,6 +2507,7 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -2469,6 +2507,7 @@
       178,    /* "OCSP" */
       180,    /* "OCSPSigning" */
      1005,    /* "OGRN" */
@@ -1190,7 +1168,7 @@ index d1b1bc7..d8082b5 100644
       379,    /* "ORG" */
        18,    /* "OU" */
       749,    /* "Oakley-EC2N-3" */
-@@ -2642,6 +2681,13 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -2642,6 +2681,13 @@
       883,    /* "certificateRevocationList" */
        54,    /* "challengePassword" */
       407,    /* "characteristic-two-field" */
@@ -1204,7 +1182,7 @@ index d1b1bc7..d8082b5 100644
       395,    /* "clearance" */
       130,    /* "clientAuth" */
      1131,    /* "cmcCA" */
-@@ -2748,12 +2794,6 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -2748,12 +2794,6 @@
      1010,    /* "gost89-ecb" */
       812,    /* "gost94" */
       850,    /* "gost94cc" */
@@ -1217,7 +1195,7 @@ index d1b1bc7..d8082b5 100644
      1156,    /* "hmacWithDstu34311" */
       797,    /* "hmacWithMD5" */
       163,    /* "hmacWithSHA1" */
-@@ -3040,11 +3080,9 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3040,11 +3080,9 @@
       990,    /* "id-tc26-cipher" */
      1001,    /* "id-tc26-cipher-constants" */
      1176,    /* "id-tc26-cipher-gostr3412-2015-kuznyechik" */
@@ -1231,7 +1209,7 @@ index d1b1bc7..d8082b5 100644
       994,    /* "id-tc26-constants" */
       981,    /* "id-tc26-digest" */
      1000,    /* "id-tc26-digest-constants" */
-@@ -3063,6 +3101,8 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3063,6 +3101,8 @@
       988,    /* "id-tc26-hmac-gost-3411-2012-256" */
       989,    /* "id-tc26-hmac-gost-3411-2012-512" */
       987,    /* "id-tc26-mac" */
@@ -1240,7 +1218,7 @@ index d1b1bc7..d8082b5 100644
       978,    /* "id-tc26-sign" */
       995,    /* "id-tc26-sign-constants" */
       984,    /* "id-tc26-signwithdigest" */
-@@ -3070,9 +3110,7 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3070,9 +3110,7 @@
       986,    /* "id-tc26-signwithdigest-gost3410-2012-512" */
      1179,    /* "id-tc26-wrap" */
      1182,    /* "id-tc26-wrap-gostr3412-2015-kuznyechik" */
@@ -1250,7 +1228,7 @@ index d1b1bc7..d8082b5 100644
       676,    /* "identified-organization" */
      1170,    /* "ieee" */
      1171,    /* "ieee-siswg" */
-@@ -3095,6 +3133,16 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3095,6 +3133,16 @@
       956,    /* "jurisdictionST" */
       150,    /* "keyBag" */
        83,    /* "keyUsage" */
@@ -1267,7 +1245,7 @@ index d1b1bc7..d8082b5 100644
       477,    /* "lastModifiedBy" */
       476,    /* "lastModifiedTime" */
       157,    /* "localKeyID" */
-@@ -3102,8 +3150,12 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3102,8 +3150,12 @@
      1190,    /* "magma-cbc" */
      1191,    /* "magma-cfb" */
      1188,    /* "magma-ctr" */
@@ -1280,7 +1258,7 @@ index d1b1bc7..d8082b5 100644
      1189,    /* "magma-ofb" */
       460,    /* "mail" */
       493,    /* "mailPreferenceOption" */
-@@ -3467,7 +3519,7 @@ static const unsigned int sn_objs[NUM_SN] = {
+@@ -3467,7 +3519,7 @@
      1093,    /* "x509ExtAdmission" */
  };
  
@@ -1289,7 +1267,7 @@ index d1b1bc7..d8082b5 100644
  static const unsigned int ln_objs[NUM_LN] = {
       363,    /* "AD Time Stamping" */
       405,    /* "ANSI X9.62" */
-@@ -3485,6 +3537,13 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -3485,6 +3537,13 @@
       952,    /* "CT Precertificate Poison" */
       951,    /* "CT Precertificate SCTs" */
       953,    /* "CT Precertificate Signer" */
@@ -1303,7 +1281,7 @@ index d1b1bc7..d8082b5 100644
       131,    /* "Code Signing" */
      1024,    /* "Ctrl/Provision WAP Termination" */
      1023,    /* "Ctrl/provision WAP Access" */
-@@ -3546,6 +3605,10 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -3546,6 +3605,10 @@
       808,    /* "GOST R 34.11-94 with GOST R 34.10-94" */
       852,    /* "GOST R 34.11-94 with GOST R 34.10-94 Cryptocom" */
       854,    /* "GOST R 3410-2001 Parameter Set Cryptocom" */
@@ -1314,7 +1292,7 @@ index d1b1bc7..d8082b5 100644
      1156,    /* "HMAC DSTU Gost 34311-95" */
       988,    /* "HMAC GOST 34.11-2012 256 bit" */
       989,    /* "HMAC GOST 34.11-2012 512 bit" */
-@@ -3604,6 +3667,7 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -3604,6 +3667,7 @@
       371,    /* "OCSP Service Locator" */
       180,    /* "OCSP Signing" */
      1005,    /* "OGRN" */
@@ -1322,7 +1300,7 @@ index d1b1bc7..d8082b5 100644
       161,    /* "PBES2" */
        69,    /* "PBKDF2" */
       162,    /* "PBMAC1" */
-@@ -3967,12 +4031,6 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -3967,12 +4031,6 @@
       975,    /* "gost89-cnt-12" */
      1011,    /* "gost89-ctr" */
      1010,    /* "gost89-ecb" */
@@ -1335,7 +1313,7 @@ index d1b1bc7..d8082b5 100644
      1036,    /* "hkdf" */
       855,    /* "hmac" */
       780,    /* "hmac-md5" */
-@@ -4220,11 +4278,7 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -4220,11 +4278,7 @@
       990,    /* "id-tc26-cipher" */
      1001,    /* "id-tc26-cipher-constants" */
      1176,    /* "id-tc26-cipher-gostr3412-2015-kuznyechik" */
@@ -1347,7 +1325,7 @@ index d1b1bc7..d8082b5 100644
       994,    /* "id-tc26-constants" */
       981,    /* "id-tc26-digest" */
      1000,    /* "id-tc26-digest-constants" */
-@@ -4237,9 +4291,7 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -4237,9 +4291,7 @@
       984,    /* "id-tc26-signwithdigest" */
      1179,    /* "id-tc26-wrap" */
      1182,    /* "id-tc26-wrap-gostr3412-2015-kuznyechik" */
@@ -1357,7 +1335,7 @@ index d1b1bc7..d8082b5 100644
        34,    /* "idea-cbc" */
        35,    /* "idea-cfb" */
        36,    /* "idea-ecb" */
-@@ -4262,6 +4314,16 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -4262,6 +4314,16 @@
       956,    /* "jurisdictionStateOrProvinceName" */
       150,    /* "keyBag" */
       773,    /* "kisa" */
@@ -1374,7 +1352,7 @@ index d1b1bc7..d8082b5 100644
      1063,    /* "kx-any" */
      1039,    /* "kx-dhe" */
      1041,    /* "kx-dhe-psk" */
-@@ -4280,8 +4342,12 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -4280,8 +4342,12 @@
      1190,    /* "magma-cbc" */
      1191,    /* "magma-cfb" */
      1188,    /* "magma-ctr" */
@@ -1387,7 +1365,7 @@ index d1b1bc7..d8082b5 100644
      1189,    /* "magma-ofb" */
       493,    /* "mailPreferenceOption" */
       467,    /* "manager" */
-@@ -4657,7 +4723,7 @@ static const unsigned int ln_objs[NUM_LN] = {
+@@ -4657,7 +4723,7 @@
       125,    /* "zlib compression" */
  };
  
@@ -1396,7 +1374,7 @@ index d1b1bc7..d8082b5 100644
  static const unsigned int obj_objs[NUM_OBJ] = {
         0,    /* OBJ_undef                        0 */
       181,    /* OBJ_iso                          1 */
-@@ -4910,8 +4976,10 @@ static const unsigned int obj_objs[NUM_OBJ] = {
+@@ -4910,8 +4976,10 @@
       974,    /* OBJ_id_tc26                      1 2 643 7 1 */
      1005,    /* OBJ_OGRN                         1 2 643 100 1 */
      1006,    /* OBJ_SNILS                        1 2 643 100 3 */
@@ -1407,7 +1385,7 @@ index d1b1bc7..d8082b5 100644
       184,    /* OBJ_X9_57                        1 2 840 10040 */
       405,    /* OBJ_ansi_X9_62                   1 2 840 10045 */
       389,    /* OBJ_Enterprises                  1 3 6 1 4 1 */
-@@ -4998,8 +5066,15 @@ static const unsigned int obj_objs[NUM_OBJ] = {
+@@ -4998,8 +5066,15 @@
       816,    /* OBJ_id_GostR3411_94_prf          1 2 643 2 2 23 */
       817,    /* OBJ_id_GostR3410_2001DH          1 2 643 2 2 98 */
       818,    /* OBJ_id_GostR3410_94DH            1 2 643 2 2 99 */
@@ -1423,7 +1401,7 @@ index d1b1bc7..d8082b5 100644
         1,    /* OBJ_rsadsi                       1 2 840 113549 */
       185,    /* OBJ_X9cm                         1 2 840 10040 4 */
      1031,    /* OBJ_id_pkinit                    1 3 6 1 5 2 3 */
-@@ -5051,6 +5126,7 @@ static const unsigned int obj_objs[NUM_OBJ] = {
+@@ -5051,6 +5126,7 @@
       842,    /* OBJ_id_GostR3410_2001_CryptoPro_C_ParamSet 1 2 643 2 2 35 3 */
       843,    /* OBJ_id_GostR3410_2001_CryptoPro_XchA_ParamSet 1 2 643 2 2 36 0 */
       844,    /* OBJ_id_GostR3410_2001_CryptoPro_XchB_ParamSet 1 2 643 2 2 36 1 */
@@ -1431,7 +1409,7 @@ index d1b1bc7..d8082b5 100644
       978,    /* OBJ_id_tc26_sign                 1 2 643 7 1 1 1 */
       981,    /* OBJ_id_tc26_digest               1 2 643 7 1 1 2 */
       984,    /* OBJ_id_tc26_signwithdigest       1 2 643 7 1 1 3 */
-@@ -5138,6 +5214,7 @@ static const unsigned int obj_objs[NUM_OBJ] = {
+@@ -5138,6 +5214,7 @@
       849,    /* OBJ_id_Gost28147_89_cc           1 2 643 2 9 1 6 1 */
       854,    /* OBJ_id_GostR3410_2001_ParamSet_cc 1 2 643 2 9 1 8 1 */
      1004,    /* OBJ_INN                          1 2 643 3 131 1 1 */
@@ -1439,7 +1417,7 @@ index d1b1bc7..d8082b5 100644
       979,    /* OBJ_id_GostR3410_2012_256        1 2 643 7 1 1 1 1 */
       980,    /* OBJ_id_GostR3410_2012_512        1 2 643 7 1 1 1 2 */
       982,    /* OBJ_id_GostR3411_2012_256        1 2 643 7 1 1 2 2 */
-@@ -5359,12 +5436,13 @@ static const unsigned int obj_objs[NUM_OBJ] = {
+@@ -5359,12 +5436,13 @@
      1120,    /* OBJ_aria_128_ccm                 1 2 410 200046 1 1 37 */
      1121,    /* OBJ_aria_192_ccm                 1 2 410 200046 1 1 38 */
      1122,    /* OBJ_aria_256_ccm                 1 2 410 200046 1 1 39 */
@@ -1459,45 +1437,10 @@ index d1b1bc7..d8082b5 100644
      1148,    /* OBJ_id_tc26_gost_3410_2012_256_paramSetA 1 2 643 7 1 2 1 1 1 */
      1184,    /* OBJ_id_tc26_gost_3410_2012_256_paramSetB 1 2 643 7 1 2 1 1 2 */
      1185,    /* OBJ_id_tc26_gost_3410_2012_256_paramSetC 1 2 643 7 1 2 1 1 3 */
-diff --git a/crypto/objects/obj_mac.num b/crypto/objects/obj_mac.num
-index 1b6a9c6..6d70d8c 100644
---- a/crypto/objects/obj_mac.num
-+++ b/crypto/objects/obj_mac.num
-@@ -1192,3 +1192,29 @@ magma_cfb		1191
- magma_mac		1192
- hmacWithSHA512_224		1193
- hmacWithSHA512_256		1194
-+id_tc26_modules		1195
-+id_tc26_cms		1196
-+id_tc26_cms_attrs		1197
-+id_tc26_mac_attr		1198
-+magma_ctr_acpkm		1199
-+magma_ctr_acpkm_omac		1200
-+kuznyechik_ctr_acpkm		1201
-+kuznyechik_ctr_acpkm_omac		1202
-+magma_kexp15		1203
-+kuznyechik_kexp15		1204
-+OGRNIP		1205
-+classSignTool		1206
-+classSignToolKC1		1207
-+classSignToolKC2		1208
-+classSignToolKC3		1209
-+classSignToolKB1		1210
-+classSignToolKB2		1211
-+classSignToolKA1		1212
-+kuznyechik_ecb		1213
-+kuznyechik_ctr		1214
-+kuznyechik_ofb		1215
-+kuznyechik_cbc		1216
-+kuznyechik_cfb		1217
-+kuznyechik_mac		1218
-+kuznyechik_mgm		1219
-+magma_mgm		1220
-diff --git a/crypto/objects/objects.txt b/crypto/objects/objects.txt
-index c49d4c5..00444c4 100644
---- a/crypto/objects/objects.txt
-+++ b/crypto/objects/objects.txt
-@@ -1321,6 +1321,14 @@ cryptocom 1 8 1		: id-GostR3410-2001-ParamSet-cc : GOST R 3410-2001 Parameter Se
+diff -ru --unidirectional-new-file a/crypto/objects/objects.txt b/crypto/objects/objects.txt
+--- a/crypto/objects/objects.txt	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/objects/objects.txt	2021-11-22 17:59:12.328968531 +0400
+@@ -1321,6 +1321,14 @@
  
  # TC26 GOST OIDs
  
@@ -1512,7 +1455,7 @@ index c49d4c5..00444c4 100644
  id-tc26 1 		: id-tc26-algorithms
  id-tc26-algorithms 1	: id-tc26-sign
  !Cname id-GostR3410-2012-256
-@@ -1344,11 +1352,11 @@ id-tc26-mac 2		: id-tc26-hmac-gost-3411-2012-512 : HMAC GOST 34.11-2012 512 bit
+@@ -1344,11 +1352,11 @@
  
  id-tc26-algorithms 5	: id-tc26-cipher
  id-tc26-cipher 1	:  id-tc26-cipher-gostr3412-2015-magma
@@ -1528,7 +1471,7 @@ index c49d4c5..00444c4 100644
  
  id-tc26-algorithms 6	: id-tc26-agreement
  id-tc26-agreement 1	: id-tc26-agreement-gost-3410-2012-256
-@@ -1356,9 +1364,9 @@ id-tc26-agreement 2	: id-tc26-agreement-gost-3410-2012-512
+@@ -1356,9 +1364,9 @@
  
  id-tc26-algorithms 7	:	id-tc26-wrap
  id-tc26-wrap 1	: id-tc26-wrap-gostr3412-2015-magma
@@ -1540,7 +1483,7 @@ index c49d4c5..00444c4 100644
  
  id-tc26 2 		: id-tc26-constants
  
-@@ -1382,16 +1390,25 @@ id-tc26-gost-28147-constants 1	: id-tc26-gost-28147-param-Z : GOST 28147-89 TC26
+@@ -1382,16 +1390,25 @@
  member-body 643 3 131 1 1	: INN	: INN
  member-body 643 100 1		: OGRN	: OGRN
  member-body 643 100 3		: SNILS	: SNILS
@@ -1571,41 +1514,71 @@ index c49d4c5..00444c4 100644
 +			: kuznyechik-mgm
  
  #GOST R34.13-2015 Magma
-	    : magma-ecb
-@@ -1400,6 +1417,7 @@ member-body 643 100 112	: issuerSignTool	: Signing Tool of Issuer
-	    : magma-cbc
-	    : magma-cfb
-	    : magma-mac
+ 			: magma-ecb
+@@ -1400,6 +1417,7 @@
+ 			: magma-cbc
+ 			: magma-cfb
+ 			: magma-mac
 +			: magma-mgm
  
  # Definitions for Camellia cipher - CBC MODE
  
-diff --git a/crypto/x509v3/build.info b/crypto/x509v3/build.info
-index 4ab6488..322a121 100644
---- a/crypto/x509v3/build.info
-+++ b/crypto/x509v3/build.info
-@@ -5,4 +5,4 @@ SOURCE[../../libcrypto]=\
+diff -ru --unidirectional-new-file a/crypto/objects/obj_mac.num b/crypto/objects/obj_mac.num
+--- a/crypto/objects/obj_mac.num	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/objects/obj_mac.num	2021-11-22 17:59:24.053316994 +0400
+@@ -1192,3 +1192,29 @@
+ magma_mac		1192
+ hmacWithSHA512_224		1193
+ hmacWithSHA512_256		1194
++id_tc26_modules		1195
++id_tc26_cms		1196
++id_tc26_cms_attrs		1197
++id_tc26_mac_attr		1198
++magma_ctr_acpkm		1199
++magma_ctr_acpkm_omac		1200
++kuznyechik_ctr_acpkm		1201
++kuznyechik_ctr_acpkm_omac		1202
++magma_kexp15		1203
++kuznyechik_kexp15		1204
++OGRNIP		1205
++classSignTool		1206
++classSignToolKC1		1207
++classSignToolKC2		1208
++classSignToolKC3		1209
++classSignToolKB1		1210
++classSignToolKB2		1211
++classSignToolKA1		1212
++kuznyechik_ecb		1213
++kuznyechik_ctr		1214
++kuznyechik_ofb		1215
++kuznyechik_cbc		1216
++kuznyechik_cfb		1217
++kuznyechik_mac		1218
++kuznyechik_mgm		1219
++magma_mgm		1220
+diff -ru --unidirectional-new-file a/crypto/x509v3/build.info b/crypto/x509v3/build.info
+--- a/crypto/x509v3/build.info	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/x509v3/build.info	2021-11-22 17:59:12.328968531 +0400
+@@ -5,4 +5,4 @@
    v3_int.c v3_enum.c v3_sxnet.c v3_cpols.c v3_crld.c v3_purp.c v3_info.c \
    v3_akeya.c v3_pmaps.c v3_pcons.c v3_ncons.c v3_pcia.c v3_pci.c \
    pcy_cache.c pcy_node.c pcy_data.c pcy_map.c pcy_tree.c pcy_lib.c \
 -  v3_asid.c v3_addr.c v3_tlsf.c v3_admis.c
 +  v3_asid.c v3_addr.c v3_tlsf.c v3_admis.c v3_rus.c
-diff --git a/crypto/x509v3/ext_dat.h b/crypto/x509v3/ext_dat.h
-index 762e264..022816e 100644
---- a/crypto/x509v3/ext_dat.h
-+++ b/crypto/x509v3/ext_dat.h
-@@ -21,5 +21,6 @@ extern const X509V3_EXT_METHOD v3_policy_mappings, v3_policy_constraints;
+diff -ru --unidirectional-new-file a/crypto/x509v3/ext_dat.h b/crypto/x509v3/ext_dat.h
+--- a/crypto/x509v3/ext_dat.h	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/x509v3/ext_dat.h	2021-11-22 17:59:12.344969007 +0400
+@@ -21,5 +21,6 @@
  extern const X509V3_EXT_METHOD v3_name_constraints, v3_inhibit_anyp, v3_idp;
  extern const X509V3_EXT_METHOD v3_addr, v3_asid;
  extern const X509V3_EXT_METHOD v3_ct_scts[3];
 +extern const X509V3_EXT_METHOD v3_subject_sign_tool, v3_issuer_sign_tool;
  extern const X509V3_EXT_METHOD v3_tls_feature;
  extern const X509V3_EXT_METHOD v3_ext_admission;
-diff --git a/crypto/x509v3/standard_exts.h b/crypto/x509v3/standard_exts.h
-index 944f4de..536b3d2 100644
---- a/crypto/x509v3/standard_exts.h
-+++ b/crypto/x509v3/standard_exts.h
-@@ -68,6 +68,8 @@ static const X509V3_EXT_METHOD *standard_exts[] = {
+diff -ru --unidirectional-new-file a/crypto/x509v3/standard_exts.h b/crypto/x509v3/standard_exts.h
+--- a/crypto/x509v3/standard_exts.h	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/x509v3/standard_exts.h	2021-11-22 17:59:12.328968531 +0400
+@@ -68,6 +68,8 @@
      &v3_ct_scts[1],
      &v3_ct_scts[2],
  #endif
@@ -1614,11 +1587,10 @@ index 944f4de..536b3d2 100644
      &v3_tls_feature,
      &v3_ext_admission
  };
-diff --git a/crypto/x509v3/v3_alt.c b/crypto/x509v3/v3_alt.c
-index 7ac2911..1b242e8 100644
---- a/crypto/x509v3/v3_alt.c
-+++ b/crypto/x509v3/v3_alt.c
-@@ -24,26 +24,59 @@ static int copy_issuer(X509V3_CTX *ctx, GENERAL_NAMES *gens);
+diff -ru --unidirectional-new-file a/crypto/x509v3/v3_alt.c b/crypto/x509v3/v3_alt.c
+--- a/crypto/x509v3/v3_alt.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/x509v3/v3_alt.c	2021-11-22 17:59:12.344969007 +0400
+@@ -24,26 +24,59 @@
  static int do_othername(GENERAL_NAME *gen, const char *value, X509V3_CTX *ctx);
  static int do_dirname(GENERAL_NAME *gen, const char *value, X509V3_CTX *ctx);
  
@@ -1682,7 +1654,7 @@ index 7ac2911..1b242e8 100644
  };
  
  STACK_OF(CONF_VALUE) *i2v_GENERAL_NAMES(X509V3_EXT_METHOD *method,
-@@ -79,7 +112,7 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
+@@ -79,7 +112,7 @@
                                         STACK_OF(CONF_VALUE) *ret)
  {
      unsigned char *p;
@@ -1691,7 +1663,7 @@ index 7ac2911..1b242e8 100644
      int i;
  
      switch (gen->type) {
-@@ -114,7 +147,7 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
+@@ -114,7 +147,7 @@
          break;
  
      case GEN_DIRNAME:
@@ -1700,7 +1672,7 @@ index 7ac2911..1b242e8 100644
                  || !X509V3_add_value("DirName", oline, &ret))
              return NULL;
          break;
-@@ -151,6 +184,96 @@ STACK_OF(CONF_VALUE) *i2v_GENERAL_NAME(X509V3_EXT_METHOD *method,
+@@ -151,6 +184,96 @@
      return ret;
  }
  
@@ -1797,11 +1769,38 @@ index 7ac2911..1b242e8 100644
  int GENERAL_NAME_print(BIO *out, GENERAL_NAME *gen)
  {
      unsigned char *p;
-diff --git a/crypto/x509v3/v3_rus.c b/crypto/x509v3/v3_rus.c
-new file mode 100644
-index 0000000..415c916
---- /dev/null
-+++ b/crypto/x509v3/v3_rus.c
+diff -ru --unidirectional-new-file a/crypto/x509v3/v3err.c b/crypto/x509v3/v3err.c
+--- a/crypto/x509v3/v3err.c	2020-04-21 16:22:39.000000000 +0400
++++ b/crypto/x509v3/v3err.c	2021-11-22 17:59:12.328968531 +0400
+@@ -1,6 +1,6 @@
+ /*
+  * Generated by util/mkerr.pl DO NOT EDIT
+- * Copyright 1995-2018 The OpenSSL Project Authors. All Rights Reserved.
++ * Copyright 1995-2019 The OpenSSL Project Authors. All Rights Reserved.
+  *
+  * Licensed under the OpenSSL license (the "License").  You may not use
+  * this file except in compliance with the License.  You can obtain a copy
+@@ -37,6 +37,8 @@
+      "i2s_ASN1_IA5STRING"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2S_ASN1_INTEGER, 0),
+      "i2s_ASN1_INTEGER"},
++    {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2S_ASN1_UTF8STRING, 0),
++     "i2s_ASN1_UTF8STRING"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2V_AUTHORITY_INFO_ACCESS, 0),
+      "i2v_AUTHORITY_INFO_ACCESS"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_LEVEL_ADD_NODE, 0), "level_add_node"},
+@@ -58,6 +60,8 @@
+      "s2i_ASN1_INTEGER"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_ASN1_OCTET_STRING, 0),
+      "s2i_ASN1_OCTET_STRING"},
++    {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_ASN1_UTF8STRING, 0),
++     "s2i_ASN1_UTF8STRING"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_SKEY_ID, 0), "s2i_skey_id"},
+     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_SET_DIST_POINT_NAME, 0),
+      "set_dist_point_name"},
+diff -ru --unidirectional-new-file a/crypto/x509v3/v3_rus.c b/crypto/x509v3/v3_rus.c
+--- a/crypto/x509v3/v3_rus.c	1970-01-01 04:00:00.000000000 +0400
++++ b/crypto/x509v3/v3_rus.c	2021-11-22 17:59:12.348969126 +0400
 @@ -0,0 +1,168 @@
 +/* v3_rus.c */
 +/*
@@ -1971,41 +1970,10 @@ index 0000000..415c916
 +    0,
 +    (X509V3_EXT_I2R)i2r_ISSUER_SIGN_TOOL, 0, NULL
 +};
-diff --git a/crypto/x509v3/v3err.c b/crypto/x509v3/v3err.c
-index 4f2ea52..25739ac 100644
---- a/crypto/x509v3/v3err.c
-+++ b/crypto/x509v3/v3err.c
-@@ -1,6 +1,6 @@
- /*
-  * Generated by util/mkerr.pl DO NOT EDIT
-- * Copyright 1995-2018 The OpenSSL Project Authors. All Rights Reserved.
-+ * Copyright 1995-2019 The OpenSSL Project Authors. All Rights Reserved.
-  *
-  * Licensed under the OpenSSL license (the "License").  You may not use
-  * this file except in compliance with the License.  You can obtain a copy
-@@ -37,6 +37,8 @@ static const ERR_STRING_DATA X509V3_str_functs[] = {
-      "i2s_ASN1_IA5STRING"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2S_ASN1_INTEGER, 0),
-      "i2s_ASN1_INTEGER"},
-+    {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2S_ASN1_UTF8STRING, 0),
-+     "i2s_ASN1_UTF8STRING"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_I2V_AUTHORITY_INFO_ACCESS, 0),
-      "i2v_AUTHORITY_INFO_ACCESS"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_LEVEL_ADD_NODE, 0), "level_add_node"},
-@@ -58,6 +60,8 @@ static const ERR_STRING_DATA X509V3_str_functs[] = {
-      "s2i_ASN1_INTEGER"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_ASN1_OCTET_STRING, 0),
-      "s2i_ASN1_OCTET_STRING"},
-+    {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_ASN1_UTF8STRING, 0),
-+     "s2i_ASN1_UTF8STRING"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_S2I_SKEY_ID, 0), "s2i_skey_id"},
-     {ERR_PACK(ERR_LIB_X509V3, X509V3_F_SET_DIST_POINT_NAME, 0),
-      "set_dist_point_name"},
-diff --git a/fuzz/oids.txt b/fuzz/oids.txt
-index eda55e4..5c81d68 100644
---- a/fuzz/oids.txt
-+++ b/fuzz/oids.txt
-@@ -1048,18 +1048,30 @@ OBJ_ieee="\x2B\x6F"
+diff -ru --unidirectional-new-file a/fuzz/oids.txt b/fuzz/oids.txt
+--- a/fuzz/oids.txt	2020-04-21 16:22:39.000000000 +0400
++++ b/fuzz/oids.txt	2021-11-22 17:59:24.053316994 +0400
+@@ -1048,18 +1048,30 @@
  OBJ_ieee_siswg="\x2B\x6F\x02\x8C\x53"
  OBJ_sm2="\x2A\x81\x1C\xCF\x55\x01\x82\x2D"
  OBJ_id_tc26_cipher_gostr3412_2015_magma="\x2A\x85\x03\x07\x01\x01\x05\x01"
@@ -2042,47 +2010,9 @@ index eda55e4..5c81d68 100644
 +OBJ_classSignToolKB1="\x2A\x85\x03\x64\x71\x04"
 +OBJ_classSignToolKB2="\x2A\x85\x03\x64\x71\x05"
 +OBJ_classSignToolKA1="\x2A\x85\x03\x64\x71\x06"
-diff --git a/include/openssl/cms.h b/include/openssl/cms.h
-index c762796..c90a01f 100644
---- a/include/openssl/cms.h
-+++ b/include/openssl/cms.h
-@@ -73,6 +73,7 @@ DECLARE_ASN1_PRINT_FUNCTION(CMS_ContentInfo)
- # define CMS_DEBUG_DECRYPT               0x20000
- # define CMS_KEY_PARAM                   0x40000
- # define CMS_ASCIICRLF                   0x80000
-+# define CMS_USE_ORIGINATOR_KEYID        0x100000
- 
- const ASN1_OBJECT *CMS_get0_type(const CMS_ContentInfo *cms);
- 
-@@ -143,6 +144,7 @@ int CMS_decrypt(CMS_ContentInfo *cms, EVP_PKEY *pkey, X509 *cert,
-                 BIO *dcont, BIO *out, unsigned int flags);
- 
- int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert);
-+int CMS_decrypt_set1_pkey_and_peer(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert, X509 *peer);
- int CMS_decrypt_set1_key(CMS_ContentInfo *cms,
-                          unsigned char *key, size_t keylen,
-                          const unsigned char *id, size_t idlen);
-@@ -155,6 +157,8 @@ EVP_PKEY_CTX *CMS_RecipientInfo_get0_pkey_ctx(CMS_RecipientInfo *ri);
- CMS_ContentInfo *CMS_EnvelopedData_create(const EVP_CIPHER *cipher);
- CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
-                                            X509 *recip, unsigned int flags);
-+CMS_RecipientInfo *CMS_add1_recipient(CMS_ContentInfo *cms, X509 *recip, 
-+     EVP_PKEY *originatorPrivKey, X509 * originator, unsigned int flags);
- int CMS_RecipientInfo_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pkey);
- int CMS_RecipientInfo_ktri_cert_cmp(CMS_RecipientInfo *ri, X509 *cert);
- int CMS_RecipientInfo_ktri_get0_algs(CMS_RecipientInfo *ri,
-@@ -319,6 +323,7 @@ int CMS_RecipientEncryptedKey_get0_id(CMS_RecipientEncryptedKey *rek,
- int CMS_RecipientEncryptedKey_cert_cmp(CMS_RecipientEncryptedKey *rek,
-                                        X509 *cert);
- int CMS_RecipientInfo_kari_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pk);
-+int CMS_RecipientInfo_kari_set0_pkey_and_peer(CMS_RecipientInfo *ri, EVP_PKEY *pk, X509 *peer);
- EVP_CIPHER_CTX *CMS_RecipientInfo_kari_get0_ctx(CMS_RecipientInfo *ri);
- int CMS_RecipientInfo_kari_decrypt(CMS_ContentInfo *cms,
-                                    CMS_RecipientInfo *ri,
-diff --git a/include/openssl/cmserr.h b/include/openssl/cmserr.h
-index 7dbc13d..9131e07 100644
---- a/include/openssl/cmserr.h
-+++ b/include/openssl/cmserr.h
+diff -ru --unidirectional-new-file a/include/openssl/cmserr.h b/include/openssl/cmserr.h
+--- a/include/openssl/cmserr.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/cmserr.h	2021-11-22 17:59:12.364969601 +0400
 @@ -11,9 +11,7 @@
  #ifndef HEADER_CMSERR_H
  # define HEADER_CMSERR_H
@@ -2094,7 +2024,7 @@ index 7dbc13d..9131e07 100644
  
  # include <openssl/opensslconf.h>
  
-@@ -32,6 +30,7 @@ int ERR_load_CMS_strings(void);
+@@ -32,6 +30,7 @@
  #  define CMS_F_CMS_ADD0_RECIPIENT_KEY                     100
  #  define CMS_F_CMS_ADD0_RECIPIENT_PASSWORD                165
  #  define CMS_F_CMS_ADD1_RECEIPTREQUEST                    158
@@ -2102,7 +2032,7 @@ index 7dbc13d..9131e07 100644
  #  define CMS_F_CMS_ADD1_RECIPIENT_CERT                    101
  #  define CMS_F_CMS_ADD1_SIGNER                            102
  #  define CMS_F_CMS_ADD1_SIGNINGTIME                       103
-@@ -47,6 +46,7 @@ int ERR_load_CMS_strings(void);
+@@ -47,6 +46,7 @@
  #  define CMS_F_CMS_DECRYPT_SET1_KEY                       113
  #  define CMS_F_CMS_DECRYPT_SET1_PASSWORD                  166
  #  define CMS_F_CMS_DECRYPT_SET1_PKEY                      114
@@ -2110,7 +2040,7 @@ index 7dbc13d..9131e07 100644
  #  define CMS_F_CMS_DIGESTALGORITHM_FIND_CTX               115
  #  define CMS_F_CMS_DIGESTALGORITHM_INIT_BIO               116
  #  define CMS_F_CMS_DIGESTEDDATA_DO_FINAL                  117
-@@ -59,6 +59,9 @@ int ERR_load_CMS_strings(void);
+@@ -59,6 +59,9 @@
  #  define CMS_F_CMS_ENCRYPTEDDATA_ENCRYPT                  122
  #  define CMS_F_CMS_ENCRYPTEDDATA_SET1_KEY                 123
  #  define CMS_F_CMS_ENVELOPEDDATA_CREATE                   124
@@ -2120,10 +2050,45 @@ index 7dbc13d..9131e07 100644
  #  define CMS_F_CMS_ENVELOPEDDATA_INIT_BIO                 125
  #  define CMS_F_CMS_ENVELOPED_DATA_INIT                    126
  #  define CMS_F_CMS_ENV_ASN1_CTRL                          171
-diff --git a/include/openssl/evp.h b/include/openssl/evp.h
-index a411f3f..8172316 100644
---- a/include/openssl/evp.h
-+++ b/include/openssl/evp.h
+diff -ru --unidirectional-new-file a/include/openssl/cms.h b/include/openssl/cms.h
+--- a/include/openssl/cms.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/cms.h	2021-11-22 17:59:12.356969363 +0400
+@@ -73,6 +73,7 @@
+ # define CMS_DEBUG_DECRYPT               0x20000
+ # define CMS_KEY_PARAM                   0x40000
+ # define CMS_ASCIICRLF                   0x80000
++# define CMS_USE_ORIGINATOR_KEYID        0x100000
+ 
+ const ASN1_OBJECT *CMS_get0_type(const CMS_ContentInfo *cms);
+ 
+@@ -143,6 +144,7 @@
+                 BIO *dcont, BIO *out, unsigned int flags);
+ 
+ int CMS_decrypt_set1_pkey(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert);
++int CMS_decrypt_set1_pkey_and_peer(CMS_ContentInfo *cms, EVP_PKEY *pk, X509 *cert, X509 *peer);
+ int CMS_decrypt_set1_key(CMS_ContentInfo *cms,
+                          unsigned char *key, size_t keylen,
+                          const unsigned char *id, size_t idlen);
+@@ -155,6 +157,8 @@
+ CMS_ContentInfo *CMS_EnvelopedData_create(const EVP_CIPHER *cipher);
+ CMS_RecipientInfo *CMS_add1_recipient_cert(CMS_ContentInfo *cms,
+                                            X509 *recip, unsigned int flags);
++CMS_RecipientInfo *CMS_add1_recipient(CMS_ContentInfo *cms, X509 *recip, 
++     EVP_PKEY *originatorPrivKey, X509 * originator, unsigned int flags);
+ int CMS_RecipientInfo_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pkey);
+ int CMS_RecipientInfo_ktri_cert_cmp(CMS_RecipientInfo *ri, X509 *cert);
+ int CMS_RecipientInfo_ktri_get0_algs(CMS_RecipientInfo *ri,
+@@ -319,6 +323,7 @@
+ int CMS_RecipientEncryptedKey_cert_cmp(CMS_RecipientEncryptedKey *rek,
+                                        X509 *cert);
+ int CMS_RecipientInfo_kari_set0_pkey(CMS_RecipientInfo *ri, EVP_PKEY *pk);
++int CMS_RecipientInfo_kari_set0_pkey_and_peer(CMS_RecipientInfo *ri, EVP_PKEY *pk, X509 *peer);
+ EVP_CIPHER_CTX *CMS_RecipientInfo_kari_get0_ctx(CMS_RecipientInfo *ri);
+ int CMS_RecipientInfo_kari_decrypt(CMS_ContentInfo *cms,
+                                    CMS_RecipientInfo *ri,
+diff -ru --unidirectional-new-file a/include/openssl/evp.h b/include/openssl/evp.h
+--- a/include/openssl/evp.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/evp.h	2021-11-22 17:59:12.364969601 +0400
 @@ -20,6 +20,9 @@
  # define EVP_MAX_KEY_LENGTH              64
  # define EVP_MAX_IV_LENGTH               16
@@ -2134,7 +2099,7 @@ index a411f3f..8172316 100644
  
  # define PKCS5_SALT_LEN                  8
  /* Default PKCS#5 iteration count */
-@@ -139,6 +142,7 @@ int (*EVP_MD_meth_get_ctrl(const EVP_MD *md))(EVP_MD_CTX *ctx, int cmd,
+@@ -139,6 +142,7 @@
  #  define EVP_MD_CTRL_DIGALGID                    0x1
  #  define EVP_MD_CTRL_MICALG                      0x2
  #  define EVP_MD_CTRL_XOF_LEN                     0x3
@@ -2142,7 +2107,7 @@ index a411f3f..8172316 100644
  
  /* Minimum Algorithm specific ctrl value */
  
-@@ -277,8 +281,9 @@ int (*EVP_CIPHER_meth_get_ctrl(const EVP_CIPHER *cipher))(EVP_CIPHER_CTX *,
+@@ -277,8 +281,9 @@
  # define         EVP_CIPH_FLAG_AEAD_CIPHER       0x200000
  # define         EVP_CIPH_FLAG_TLS1_1_MULTIBLOCK 0x400000
  /* Cipher can handle pipeline operations */
@@ -2154,7 +2119,7 @@ index a411f3f..8172316 100644
  /*
   * Cipher context flag to indicate we can handle wrap mode: if allowed in
   * older applications it could overflow buffers.
-@@ -352,6 +357,20 @@ int (*EVP_CIPHER_meth_get_ctrl(const EVP_CIPHER *cipher))(EVP_CIPHER_CTX *,
+@@ -352,6 +357,20 @@
  # define         EVP_CTRL_SET_PIPELINE_INPUT_LENS        0x24
  
  # define         EVP_CTRL_GET_IVLEN                      0x25
@@ -2175,7 +2140,7 @@ index a411f3f..8172316 100644
  
  /* Padding modes */
  #define EVP_PADDING_PKCS7       1
-@@ -390,6 +409,10 @@ typedef struct {
+@@ -390,6 +409,10 @@
  /* Length of CCM8 tag for TLS */
  # define EVP_CCM8_TLS_TAG_LEN                            8
  
@@ -2186,7 +2151,7 @@ index a411f3f..8172316 100644
  /* Length of tag for TLS */
  # define EVP_CHACHAPOLY_TLS_TAG_LEN                      16
  
-@@ -1142,6 +1165,10 @@ int EVP_PBE_get(int *ptype, int *ppbe_nid, size_t num);
+@@ -1142,6 +1165,10 @@
  # define ASN1_PKEY_CTRL_SET1_TLS_ENCPT   0x9
  # define ASN1_PKEY_CTRL_GET1_TLS_ENCPT   0xa
  
@@ -2197,10 +2162,9 @@ index a411f3f..8172316 100644
  int EVP_PKEY_asn1_get_count(void);
  const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_get0(int idx);
  const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find(ENGINE **pe, int type);
-diff --git a/include/openssl/obj_mac.h b/include/openssl/obj_mac.h
-index 483fc05..90b5de7 100644
---- a/include/openssl/obj_mac.h
-+++ b/include/openssl/obj_mac.h
+diff -ru --unidirectional-new-file a/include/openssl/obj_mac.h b/include/openssl/obj_mac.h
+--- a/include/openssl/obj_mac.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/obj_mac.h	2021-11-22 17:59:24.057317113 +0400
 @@ -2,7 +2,7 @@
   * WARNING: do not edit!
   * Generated by crypto/objects/objects.pl
@@ -2244,13 +2208,14 @@ index 483fc05..90b5de7 100644
 -#define SN_id_tc26_cipher_gostr3412_2015_magma_ctracpkm         "id-tc26-cipher-gostr3412-2015-magma-ctracpkm"
 -#define NID_id_tc26_cipher_gostr3412_2015_magma_ctracpkm                1174
 -#define OBJ_id_tc26_cipher_gostr3412_2015_magma_ctracpkm                OBJ_id_tc26_cipher_gostr3412_2015_magma,1L
-+#define SN_magma_ctr_acpkm              "magma-ctr-acpkm"
-+#define NID_magma_ctr_acpkm             1199
-+#define OBJ_magma_ctr_acpkm             OBJ_id_tc26_cipher_gostr3412_2015_magma,1L
- 
+-
 -#define SN_id_tc26_cipher_gostr3412_2015_magma_ctracpkm_omac            "id-tc26-cipher-gostr3412-2015-magma-ctracpkm-omac"
 -#define NID_id_tc26_cipher_gostr3412_2015_magma_ctracpkm_omac           1175
 -#define OBJ_id_tc26_cipher_gostr3412_2015_magma_ctracpkm_omac           OBJ_id_tc26_cipher_gostr3412_2015_magma,2L
++#define SN_magma_ctr_acpkm              "magma-ctr-acpkm"
++#define NID_magma_ctr_acpkm             1199
++#define OBJ_magma_ctr_acpkm             OBJ_id_tc26_cipher_gostr3412_2015_magma,1L
++
 +#define SN_magma_ctr_acpkm_omac         "magma-ctr-acpkm-omac"
 +#define NID_magma_ctr_acpkm_omac                1200
 +#define OBJ_magma_ctr_acpkm_omac                OBJ_id_tc26_cipher_gostr3412_2015_magma,2L
@@ -2262,13 +2227,14 @@ index 483fc05..90b5de7 100644
 -#define SN_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm            "id-tc26-cipher-gostr3412-2015-kuznyechik-ctracpkm"
 -#define NID_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm           1177
 -#define OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm           OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik,1L
-+#define SN_kuznyechik_ctr_acpkm         "kuznyechik-ctr-acpkm"
-+#define NID_kuznyechik_ctr_acpkm                1201
-+#define OBJ_kuznyechik_ctr_acpkm                OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik,1L
- 
+-
 -#define SN_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm_omac               "id-tc26-cipher-gostr3412-2015-kuznyechik-ctracpkm-omac"
 -#define NID_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm_omac              1178
 -#define OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik_ctracpkm_omac              OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik,2L
++#define SN_kuznyechik_ctr_acpkm         "kuznyechik-ctr-acpkm"
++#define NID_kuznyechik_ctr_acpkm                1201
++#define OBJ_kuznyechik_ctr_acpkm                OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik,1L
++
 +#define SN_kuznyechik_ctr_acpkm_omac            "kuznyechik-ctr-acpkm-omac"
 +#define NID_kuznyechik_ctr_acpkm_omac           1202
 +#define OBJ_kuznyechik_ctr_acpkm_omac           OBJ_id_tc26_cipher_gostr3412_2015_kuznyechik,2L
@@ -2317,6 +2283,9 @@ index 483fc05..90b5de7 100644
  
 -#define SN_grasshopper_ecb              "grasshopper-ecb"
 -#define NID_grasshopper_ecb             1012
+-
+-#define SN_grasshopper_ctr              "grasshopper-ctr"
+-#define NID_grasshopper_ctr             1013
 +#define SN_classSignTool                "classSignTool"
 +#define LN_classSignTool                "Class of Signing Tool"
 +#define NID_classSignTool               1206
@@ -2331,37 +2300,27 @@ index 483fc05..90b5de7 100644
 +#define LN_classSignToolKC2             "Class of Signing Tool KC2"
 +#define NID_classSignToolKC2            1208
 +#define OBJ_classSignToolKC2            OBJ_member_body,643L,100L,113L,2L
- 
--#define SN_grasshopper_ctr              "grasshopper-ctr"
--#define NID_grasshopper_ctr             1013
++
 +#define SN_classSignToolKC3             "classSignToolKC3"
 +#define LN_classSignToolKC3             "Class of Signing Tool KC3"
 +#define NID_classSignToolKC3            1209
 +#define OBJ_classSignToolKC3            OBJ_member_body,643L,100L,113L,3L
- 
--#define SN_grasshopper_ofb              "grasshopper-ofb"
--#define NID_grasshopper_ofb             1014
++
 +#define SN_classSignToolKB1             "classSignToolKB1"
 +#define LN_classSignToolKB1             "Class of Signing Tool KB1"
 +#define NID_classSignToolKB1            1210
 +#define OBJ_classSignToolKB1            OBJ_member_body,643L,100L,113L,4L
- 
--#define SN_grasshopper_cbc              "grasshopper-cbc"
--#define NID_grasshopper_cbc             1015
++
 +#define SN_classSignToolKB2             "classSignToolKB2"
 +#define LN_classSignToolKB2             "Class of Signing Tool KB2"
 +#define NID_classSignToolKB2            1211
 +#define OBJ_classSignToolKB2            OBJ_member_body,643L,100L,113L,5L
- 
--#define SN_grasshopper_cfb              "grasshopper-cfb"
--#define NID_grasshopper_cfb             1016
++
 +#define SN_classSignToolKA1             "classSignToolKA1"
 +#define LN_classSignToolKA1             "Class of Signing Tool KA1"
 +#define NID_classSignToolKA1            1212
 +#define OBJ_classSignToolKA1            OBJ_member_body,643L,100L,113L,6L
- 
--#define SN_grasshopper_mac              "grasshopper-mac"
--#define NID_grasshopper_mac             1017
++
 +#define SN_kuznyechik_ecb               "kuznyechik-ecb"
 +#define NID_kuznyechik_ecb              1213
 +
@@ -2373,13 +2332,22 @@ index 483fc05..90b5de7 100644
 +
 +#define SN_kuznyechik_cbc               "kuznyechik-cbc"
 +#define NID_kuznyechik_cbc              1216
-+
+ 
+-#define SN_grasshopper_ofb              "grasshopper-ofb"
+-#define NID_grasshopper_ofb             1014
 +#define SN_kuznyechik_cfb               "kuznyechik-cfb"
 +#define NID_kuznyechik_cfb              1217
-+
+ 
+-#define SN_grasshopper_cbc              "grasshopper-cbc"
+-#define NID_grasshopper_cbc             1015
 +#define SN_kuznyechik_mac               "kuznyechik-mac"
 +#define NID_kuznyechik_mac              1218
-+
+ 
+-#define SN_grasshopper_cfb              "grasshopper-cfb"
+-#define NID_grasshopper_cfb             1016
+-
+-#define SN_grasshopper_mac              "grasshopper-mac"
+-#define NID_grasshopper_mac             1017
 +#define SN_kuznyechik_mgm               "kuznyechik-mgm"
 +#define NID_kuznyechik_mgm              1219
  
@@ -2445,31 +2413,9 @@ index 483fc05..90b5de7 100644
 +#define NID_grasshopper_mac             NID_kuznyechik_mac
 +
 +#endif
-diff --git a/include/openssl/ssl.h b/include/openssl/ssl.h
-index 6724ccf..4399c97 100644
---- a/include/openssl/ssl.h
-+++ b/include/openssl/ssl.h
-@@ -81,6 +81,7 @@ extern "C" {
- # define SSL_TXT_kECDHEPSK       "kECDHEPSK"
- # define SSL_TXT_kDHEPSK         "kDHEPSK"
- # define SSL_TXT_kGOST           "kGOST"
-+# define SSL_TXT_kGOST18         "kGOST18"
- # define SSL_TXT_kSRP            "kSRP"
- 
- # define SSL_TXT_aRSA            "aRSA"
-@@ -908,6 +909,8 @@ __owur int SSL_extension_supported(unsigned int ext_type);
- 
- # define SSL_MAC_FLAG_READ_MAC_STREAM 1
- # define SSL_MAC_FLAG_WRITE_MAC_STREAM 2
-+# define SSL_MAC_FLAG_READ_MAC_TLSTREE 4
-+# define SSL_MAC_FLAG_WRITE_MAC_TLSTREE 8
- 
- /*
-  * A callback for logging out TLS key material. This callback should log out
-diff --git a/include/openssl/sslerr.h b/include/openssl/sslerr.h
-index 82983d3..40c24ae 100644
---- a/include/openssl/sslerr.h
-+++ b/include/openssl/sslerr.h
+diff -ru --unidirectional-new-file a/include/openssl/sslerr.h b/include/openssl/sslerr.h
+--- a/include/openssl/sslerr.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/sslerr.h	2021-11-22 17:59:12.352969245 +0400
 @@ -11,9 +11,7 @@
  #ifndef HEADER_SSLERR_H
  # define HEADER_SSLERR_H
@@ -2481,7 +2427,7 @@ index 82983d3..40c24ae 100644
  
  # ifdef  __cplusplus
  extern "C"
-@@ -296,6 +294,7 @@ int ERR_load_SSL_strings(void);
+@@ -296,6 +294,7 @@
  # define SSL_F_TLS_CONSTRUCT_CKE_DHE                      404
  # define SSL_F_TLS_CONSTRUCT_CKE_ECDHE                    405
  # define SSL_F_TLS_CONSTRUCT_CKE_GOST                     406
@@ -2489,7 +2435,7 @@ index 82983d3..40c24ae 100644
  # define SSL_F_TLS_CONSTRUCT_CKE_PSK_PREAMBLE             407
  # define SSL_F_TLS_CONSTRUCT_CKE_RSA                      409
  # define SSL_F_TLS_CONSTRUCT_CKE_SRP                      410
-@@ -420,6 +419,7 @@ int ERR_load_SSL_strings(void);
+@@ -420,6 +419,7 @@
  # define SSL_F_TLS_PROCESS_CKE_DHE                        411
  # define SSL_F_TLS_PROCESS_CKE_ECDHE                      412
  # define SSL_F_TLS_PROCESS_CKE_GOST                       413
@@ -2497,11 +2443,30 @@ index 82983d3..40c24ae 100644
  # define SSL_F_TLS_PROCESS_CKE_PSK_PREAMBLE               414
  # define SSL_F_TLS_PROCESS_CKE_RSA                        415
  # define SSL_F_TLS_PROCESS_CKE_SRP                        416
-diff --git a/include/openssl/tls1.h b/include/openssl/tls1.h
-index 76d9fda..6b6442f 100644
---- a/include/openssl/tls1.h
-+++ b/include/openssl/tls1.h
-@@ -613,6 +613,12 @@ __owur int SSL_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain)
+diff -ru --unidirectional-new-file a/include/openssl/ssl.h b/include/openssl/ssl.h
+--- a/include/openssl/ssl.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/ssl.h	2021-11-22 17:59:12.360969482 +0400
+@@ -81,6 +81,7 @@
+ # define SSL_TXT_kECDHEPSK       "kECDHEPSK"
+ # define SSL_TXT_kDHEPSK         "kDHEPSK"
+ # define SSL_TXT_kGOST           "kGOST"
++# define SSL_TXT_kGOST18         "kGOST18"
+ # define SSL_TXT_kSRP            "kSRP"
+ 
+ # define SSL_TXT_aRSA            "aRSA"
+@@ -908,6 +909,8 @@
+ 
+ # define SSL_MAC_FLAG_READ_MAC_STREAM 1
+ # define SSL_MAC_FLAG_WRITE_MAC_STREAM 2
++# define SSL_MAC_FLAG_READ_MAC_TLSTREE 4
++# define SSL_MAC_FLAG_WRITE_MAC_TLSTREE 8
+ 
+ /*
+  * A callback for logging out TLS key material. This callback should log out
+diff -ru --unidirectional-new-file a/include/openssl/tls1.h b/include/openssl/tls1.h
+--- a/include/openssl/tls1.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/tls1.h	2021-11-22 17:59:12.356969363 +0400
+@@ -613,6 +613,12 @@
  # define TLS1_3_CK_AES_128_CCM_SHA256                     0x03001304
  # define TLS1_3_CK_AES_128_CCM_8_SHA256                   0x03001305
  
@@ -2514,7 +2479,7 @@ index 76d9fda..6b6442f 100644
  /* Aria ciphersuites from RFC6209 */
  # define TLS1_CK_RSA_WITH_ARIA_128_GCM_SHA256             0x0300C050
  # define TLS1_CK_RSA_WITH_ARIA_256_GCM_SHA384             0x0300C051
-@@ -1135,8 +1141,10 @@ __owur int SSL_check_chain(SSL *s, X509 *x, EVP_PKEY *pk, STACK_OF(X509) *chain)
+@@ -1135,8 +1141,10 @@
  # define TLS_CT_RSA_FIXED_ECDH           65
  # define TLS_CT_ECDSA_FIXED_ECDH         66
  # define TLS_CT_GOST01_SIGN              22
@@ -2527,11 +2492,10 @@ index 76d9fda..6b6442f 100644
  
  /*
   * when correcting this number, correct also SSL3_CT_NUMBER in ssl3.h (see
-diff --git a/include/openssl/x509.h b/include/openssl/x509.h
-index 39ca0ba..7fc04f8 100644
---- a/include/openssl/x509.h
-+++ b/include/openssl/x509.h
-@@ -1020,8 +1020,11 @@ int PKCS8_pkey_get0(const ASN1_OBJECT **ppkalg,
+diff -ru --unidirectional-new-file a/include/openssl/x509.h b/include/openssl/x509.h
+--- a/include/openssl/x509.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/x509.h	2021-11-22 17:59:12.352969245 +0400
+@@ -1020,8 +1020,11 @@
  
  const STACK_OF(X509_ATTRIBUTE) *
  PKCS8_pkey_get0_attrs(const PKCS8_PRIV_KEY_INFO *p8);
@@ -2543,11 +2507,10 @@ index 39ca0ba..7fc04f8 100644
  
  int X509_PUBKEY_set0_param(X509_PUBKEY *pub, ASN1_OBJECT *aobj,
                             int ptype, void *pval,
-diff --git a/include/openssl/x509v3err.h b/include/openssl/x509v3err.h
-index 5f25442..7bb0500 100644
---- a/include/openssl/x509v3err.h
-+++ b/include/openssl/x509v3err.h
-@@ -37,6 +37,7 @@ int ERR_load_X509V3_strings(void);
+diff -ru --unidirectional-new-file a/include/openssl/x509v3err.h b/include/openssl/x509v3err.h
+--- a/include/openssl/x509v3err.h	2020-04-21 16:22:39.000000000 +0400
++++ b/include/openssl/x509v3err.h	2021-11-22 17:59:12.368969720 +0400
+@@ -37,6 +37,7 @@
  # define X509V3_F_I2S_ASN1_ENUMERATED                     121
  # define X509V3_F_I2S_ASN1_IA5STRING                      149
  # define X509V3_F_I2S_ASN1_INTEGER                        120
@@ -2555,7 +2518,7 @@ index 5f25442..7bb0500 100644
  # define X509V3_F_I2V_AUTHORITY_INFO_ACCESS               138
  # define X509V3_F_LEVEL_ADD_NODE                          168
  # define X509V3_F_NOTICE_SECTION                          132
-@@ -51,6 +52,7 @@ int ERR_load_X509V3_strings(void);
+@@ -51,6 +52,7 @@
  # define X509V3_F_S2I_ASN1_IA5STRING                      100
  # define X509V3_F_S2I_ASN1_INTEGER                        108
  # define X509V3_F_S2I_ASN1_OCTET_STRING                   112
@@ -2563,11 +2526,10 @@ index 5f25442..7bb0500 100644
  # define X509V3_F_S2I_SKEY_ID                             115
  # define X509V3_F_SET_DIST_POINT_NAME                     158
  # define X509V3_F_SXNET_ADD_ID_ASC                        125
-diff --git a/ssl/record/ssl3_record.c b/ssl/record/ssl3_record.c
-index ab5d22a..a88be01 100644
---- a/ssl/record/ssl3_record.c
-+++ b/ssl/record/ssl3_record.c
-@@ -944,6 +944,8 @@ int tls1_enc(SSL *s, SSL3_RECORD *recs, size_t n_recs, int sending)
+diff -ru --unidirectional-new-file a/ssl/record/ssl3_record.c b/ssl/record/ssl3_record.c
+--- a/ssl/record/ssl3_record.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/record/ssl3_record.c	2021-11-22 17:59:12.380970077 +0400
+@@ -944,6 +944,8 @@
      unsigned char padval;
      int imac_size;
      const EVP_CIPHER *enc;
@@ -2576,7 +2538,7 @@ index ab5d22a..a88be01 100644
  
      if (n_recs == 0) {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_TLS1_ENC,
-@@ -1036,7 +1038,6 @@ int tls1_enc(SSL *s, SSL3_RECORD *recs, size_t n_recs, int sending)
+@@ -1036,7 +1038,6 @@
  
                  seq = sending ? RECORD_LAYER_get_write_sequence(&s->rlayer)
                      : RECORD_LAYER_get_read_sequence(&s->rlayer);
@@ -2584,7 +2546,7 @@ index ab5d22a..a88be01 100644
                  if (SSL_IS_DTLS(s)) {
                      /* DTLS does not support pipelining */
                      unsigned char dtlsseq[9], *p = dtlsseq;
-@@ -1122,6 +1123,27 @@ int tls1_enc(SSL *s, SSL3_RECORD *recs, size_t n_recs, int sending)
+@@ -1122,6 +1123,27 @@
              }
          }
  
@@ -2612,7 +2574,7 @@ index ab5d22a..a88be01 100644
          /* TODO(size_t): Convert this call */
          tmpr = EVP_Cipher(ds, recs[0].data, recs[0].input,
                            (unsigned int)reclen[0]);
-@@ -1287,6 +1309,8 @@ int tls1_mac(SSL *ssl, SSL3_RECORD *rec, unsigned char *md, int sending)
+@@ -1287,6 +1309,8 @@
      unsigned char header[13];
      int stream_mac = (sending ? (ssl->mac_flags & SSL_MAC_FLAG_WRITE_MAC_STREAM)
                        : (ssl->mac_flags & SSL_MAC_FLAG_READ_MAC_STREAM));
@@ -2621,7 +2583,7 @@ index ab5d22a..a88be01 100644
      int t;
  
      if (sending) {
-@@ -1314,6 +1338,11 @@ int tls1_mac(SSL *ssl, SSL3_RECORD *rec, unsigned char *md, int sending)
+@@ -1314,6 +1338,11 @@
          mac_ctx = hmac;
      }
  
@@ -2633,11 +2595,10 @@ index ab5d22a..a88be01 100644
      if (SSL_IS_DTLS(ssl)) {
          unsigned char dtlsseq[8], *p = dtlsseq;
  
-diff --git a/ssl/record/ssl3_record_tls13.c b/ssl/record/ssl3_record_tls13.c
-index ab50e37..4f78474 100644
---- a/ssl/record/ssl3_record_tls13.c
-+++ b/ssl/record/ssl3_record_tls13.c
-@@ -107,6 +107,10 @@ int tls13_enc(SSL *s, SSL3_RECORD *recs, size_t n_recs, int sending)
+diff -ru --unidirectional-new-file a/ssl/record/ssl3_record_tls13.c b/ssl/record/ssl3_record_tls13.c
+--- a/ssl/record/ssl3_record_tls13.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/record/ssl3_record_tls13.c	2021-11-22 17:59:12.380970077 +0400
+@@ -107,6 +107,10 @@
          taglen = EVP_GCM_TLS_TAG_LEN;
      } else if (alg_enc & SSL_CHACHA20) {
          taglen = EVP_CHACHAPOLY_TLS_TAG_LEN;
@@ -2648,7 +2609,7 @@ index ab50e37..4f78474 100644
      } else {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_TLS13_ENC,
                   ERR_R_INTERNAL_ERROR);
-@@ -135,6 +139,15 @@ int tls13_enc(SSL *s, SSL3_RECORD *recs, size_t n_recs, int sending)
+@@ -135,6 +139,15 @@
      for (loop = 0; loop < SEQ_NUM_SIZE; loop++)
          iv[offset + loop] = staticiv[offset + loop] ^ seq[loop];
  
@@ -2664,11 +2625,10 @@ index ab50e37..4f78474 100644
      /* Increment the sequence counter */
      for (loop = SEQ_NUM_SIZE; loop > 0; loop--) {
          ++seq[loop - 1];
-diff --git a/ssl/s3_lib.c b/ssl/s3_lib.c
-index a987604..c27f78f 100644
---- a/ssl/s3_lib.c
-+++ b/ssl/s3_lib.c
-@@ -111,7 +111,74 @@ static SSL_CIPHER tls13_ciphers[] = {
+diff -ru --unidirectional-new-file a/ssl/s3_lib.c b/ssl/s3_lib.c
+--- a/ssl/s3_lib.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/s3_lib.c	2021-11-22 17:59:12.384970196 +0400
+@@ -111,7 +111,74 @@
          SSL_HANDSHAKE_MAC_SHA256,
          128,
          128,
@@ -2744,7 +2704,7 @@ index a987604..c27f78f 100644
  };
  
  /*
-@@ -2665,6 +2732,54 @@ static SSL_CIPHER ssl3_ciphers[] = {
+@@ -2665,6 +2732,54 @@
       0,
       0,
       },
@@ -2799,7 +2759,7 @@ index a987604..c27f78f 100644
  #endif                          /* OPENSSL_NO_GOST */
  
  #ifndef OPENSSL_NO_IDEA
-@@ -4348,6 +4463,11 @@ int ssl3_get_req_cert_type(SSL *s, WPACKET *pkt)
+@@ -4348,6 +4463,11 @@
      if (s->version >= TLS1_VERSION && (alg_k & SSL_kGOST))
              return WPACKET_put_bytes_u8(pkt, TLS_CT_GOST01_SIGN)
                      && WPACKET_put_bytes_u8(pkt, TLS_CT_GOST12_SIGN)
@@ -2811,7 +2771,7 @@ index a987604..c27f78f 100644
                      && WPACKET_put_bytes_u8(pkt, TLS_CT_GOST12_512_SIGN);
  #endif
  
-@@ -4695,6 +4815,52 @@ EVP_PKEY *ssl_generate_pkey(EVP_PKEY *pm)
+@@ -4695,6 +4815,52 @@
      return pkey;
  }
  #ifndef OPENSSL_NO_EC
@@ -2864,7 +2824,7 @@ index a987604..c27f78f 100644
  /* Generate a private key from a group ID */
  EVP_PKEY *ssl_generate_pkey_group(SSL *s, uint16_t id)
  {
-@@ -4711,8 +4877,13 @@ EVP_PKEY *ssl_generate_pkey_group(SSL *s, uint16_t id)
+@@ -4711,8 +4877,13 @@
      gtype = ginf->flags & TLS_CURVE_TYPE;
      if (gtype == TLS_CURVE_CUSTOM)
          pctx = EVP_PKEY_CTX_new_id(ginf->nid, NULL);
@@ -2878,7 +2838,7 @@ index a987604..c27f78f 100644
      if (pctx == NULL) {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_SSL_GENERATE_PKEY_GROUP,
                   ERR_R_MALLOC_FAILURE);
-@@ -4723,7 +4894,7 @@ EVP_PKEY *ssl_generate_pkey_group(SSL *s, uint16_t id)
+@@ -4723,7 +4894,7 @@
                   ERR_R_EVP_LIB);
          goto err;
      }
@@ -2887,7 +2847,7 @@ index a987604..c27f78f 100644
              && EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, ginf->nid) <= 0) {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_SSL_GENERATE_PKEY_GROUP,
                   ERR_R_EVP_LIB);
-@@ -4761,13 +4932,21 @@ EVP_PKEY *ssl_generate_param_group(uint16_t id)
+@@ -4761,13 +4932,21 @@
          return NULL;
      }
  
@@ -2910,10 +2870,9 @@ index a987604..c27f78f 100644
      if (EVP_PKEY_paramgen(pctx, &pkey) <= 0) {
          EVP_PKEY_free(pkey);
          pkey = NULL;
-diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index 735a483..815b57b 100644
---- a/ssl/ssl_ciph.c
-+++ b/ssl/ssl_ciph.c
+diff -ru --unidirectional-new-file a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
+--- a/ssl/ssl_ciph.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/ssl_ciph.c	2021-11-22 17:59:12.380970077 +0400
 @@ -43,7 +43,11 @@
  #define SSL_ENC_CHACHA_IDX      19
  #define SSL_ENC_ARIA128GCM_IDX  20
@@ -2927,7 +2886,7 @@ index 735a483..815b57b 100644
  
  /* NB: make sure indices in these tables match values above */
  
-@@ -76,6 +80,10 @@ static const ssl_cipher_table ssl_cipher_table_cipher[SSL_ENC_NUM_IDX] = {
+@@ -76,6 +80,10 @@
      {SSL_CHACHA20POLY1305, NID_chacha20_poly1305}, /* SSL_ENC_CHACHA_IDX 19 */
      {SSL_ARIA128GCM, NID_aria_128_gcm}, /* SSL_ENC_ARIA128GCM_IDX 20 */
      {SSL_ARIA256GCM, NID_aria_256_gcm}, /* SSL_ENC_ARIA256GCM_IDX 21 */
@@ -2938,7 +2897,7 @@ index 735a483..815b57b 100644
  };
  
  static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX];
-@@ -110,11 +118,13 @@ static const ssl_cipher_table ssl_cipher_table_mac[SSL_MD_NUM_IDX] = {
+@@ -110,11 +118,13 @@
      {SSL_GOST12_512, NID_id_GostR3411_2012_512}, /* SSL_MD_GOST12_512_IDX 8 */
      {0, NID_md5_sha1},          /* SSL_MD_MD5_SHA1_IDX 9 */
      {0, NID_sha224},            /* SSL_MD_SHA224_IDX 10 */
@@ -2954,7 +2913,7 @@ index 735a483..815b57b 100644
  };
  
  /* *INDENT-OFF* */
-@@ -128,6 +138,7 @@ static const ssl_cipher_table ssl_cipher_table_kx[] = {
+@@ -128,6 +138,7 @@
      {SSL_kPSK,      NID_kx_psk},
      {SSL_kSRP,      NID_kx_srp},
      {SSL_kGOST,     NID_kx_gost},
@@ -2962,7 +2921,7 @@ index 735a483..815b57b 100644
      {SSL_kANY,      NID_kx_any}
  };
  
-@@ -171,8 +182,8 @@ static int ssl_mac_pkey_id[SSL_MD_NUM_IDX] = {
+@@ -171,8 +182,8 @@
      EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, NID_undef,
      /* GOST2012_512 */
      EVP_PKEY_HMAC,
@@ -2973,7 +2932,7 @@ index 735a483..815b57b 100644
  };
  
  static size_t ssl_mac_secret_size[SSL_MD_NUM_IDX];
-@@ -228,6 +239,7 @@ static const SSL_CIPHER cipher_aliases[] = {
+@@ -228,6 +239,7 @@
      {0, SSL_TXT_kDHEPSK, NULL, 0, SSL_kDHEPSK},
      {0, SSL_TXT_kSRP, NULL, 0, SSL_kSRP},
      {0, SSL_TXT_kGOST, NULL, 0, SSL_kGOST},
@@ -2981,7 +2940,7 @@ index 735a483..815b57b 100644
  
      /* server authentication aliases */
      {0, SSL_TXT_aRSA, NULL, 0, 0, SSL_aRSA},
-@@ -261,7 +273,7 @@ static const SSL_CIPHER cipher_aliases[] = {
+@@ -261,7 +273,7 @@
      {0, SSL_TXT_IDEA, NULL, 0, 0, 0, SSL_IDEA},
      {0, SSL_TXT_SEED, NULL, 0, 0, 0, SSL_SEED},
      {0, SSL_TXT_eNULL, NULL, 0, 0, 0, SSL_eNULL},
@@ -2990,7 +2949,7 @@ index 735a483..815b57b 100644
      {0, SSL_TXT_AES128, NULL, 0, 0, 0,
       SSL_AES128 | SSL_AES128GCM | SSL_AES128CCM | SSL_AES128CCM8},
      {0, SSL_TXT_AES256, NULL, 0, 0, 0,
-@@ -419,24 +431,38 @@ int ssl_load_ciphers(void)
+@@ -419,24 +431,38 @@
       * Check for presence of GOST 34.10 algorithms, and if they are not
       * present, disable appropriate auth and key exchange
       */
@@ -3034,7 +2993,7 @@ index 735a483..815b57b 100644
          disabled_auth_mask |= SSL_aGOST12;
      /*
       * Disable GOST key exchange if no GOST signature algs are available *
-@@ -445,6 +471,9 @@ int ssl_load_ciphers(void)
+@@ -445,6 +471,9 @@
          (SSL_aGOST01 | SSL_aGOST12))
          disabled_mkey_mask |= SSL_kGOST;
  
@@ -3044,7 +3003,7 @@ index 735a483..815b57b 100644
      return 1;
  }
  
-@@ -1686,6 +1715,9 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
+@@ -1686,6 +1715,9 @@
      case SSL_kGOST:
          kx = "GOST";
          break;
@@ -3054,7 +3013,7 @@ index 735a483..815b57b 100644
      case SSL_kANY:
          kx = "any";
          break;
-@@ -1789,6 +1821,14 @@ char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
+@@ -1789,6 +1821,14 @@
      case SSL_eGOST2814789CNT12:
          enc = "GOST89(256)";
          break;
@@ -3069,10 +3028,9 @@ index 735a483..815b57b 100644
      case SSL_CHACHA20POLY1305:
          enc = "CHACHA20/POLY1305(256)";
          break;
-diff --git a/ssl/ssl_err.c b/ssl/ssl_err.c
-index 4b12ed1..68fb0b2 100644
---- a/ssl/ssl_err.c
-+++ b/ssl/ssl_err.c
+diff -ru --unidirectional-new-file a/ssl/ssl_err.c b/ssl/ssl_err.c
+--- a/ssl/ssl_err.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/ssl_err.c	2021-11-22 17:59:12.372969839 +0400
 @@ -1,6 +1,6 @@
  /*
   * Generated by util/mkerr.pl DO NOT EDIT
@@ -3081,7 +3039,7 @@ index 4b12ed1..68fb0b2 100644
   *
   * Licensed under the OpenSSL license (the "License").  You may not use
   * this file except in compliance with the License.  You can obtain a copy
-@@ -112,6 +112,8 @@ static const ERR_STRING_DATA SSL_str_functs[] = {
+@@ -112,6 +112,8 @@
       "ossl_statem_server_post_process_message"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_OSSL_STATEM_SERVER_POST_WORK, 0),
       "ossl_statem_server_post_work"},
@@ -3090,7 +3048,7 @@ index 4b12ed1..68fb0b2 100644
      {ERR_PACK(ERR_LIB_SSL, SSL_F_OSSL_STATEM_SERVER_PROCESS_MESSAGE, 0),
       "ossl_statem_server_process_message"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_OSSL_STATEM_SERVER_READ_TRANSITION, 0),
-@@ -437,6 +439,8 @@ static const ERR_STRING_DATA SSL_str_functs[] = {
+@@ -437,6 +439,8 @@
       "tls_construct_cke_ecdhe"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_CONSTRUCT_CKE_GOST, 0),
       "tls_construct_cke_gost"},
@@ -3099,7 +3057,7 @@ index 4b12ed1..68fb0b2 100644
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_CONSTRUCT_CKE_PSK_PREAMBLE, 0),
       "tls_construct_cke_psk_preamble"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_CONSTRUCT_CKE_RSA, 0),
-@@ -664,6 +668,8 @@ static const ERR_STRING_DATA SSL_str_functs[] = {
+@@ -664,6 +668,8 @@
       "tls_process_cke_ecdhe"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_PROCESS_CKE_GOST, 0),
       "tls_process_cke_gost"},
@@ -3108,11 +3066,10 @@ index 4b12ed1..68fb0b2 100644
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_PROCESS_CKE_PSK_PREAMBLE, 0),
       "tls_process_cke_psk_preamble"},
      {ERR_PACK(ERR_LIB_SSL, SSL_F_TLS_PROCESS_CKE_RSA, 0),
-diff --git a/ssl/ssl_lib.c b/ssl/ssl_lib.c
-index 7c7e597..31bff98 100644
---- a/ssl/ssl_lib.c
-+++ b/ssl/ssl_lib.c
-@@ -3327,11 +3327,11 @@ void ssl_set_masks(SSL *s)
+diff -ru --unidirectional-new-file a/ssl/ssl_lib.c b/ssl/ssl_lib.c
+--- a/ssl/ssl_lib.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/ssl_lib.c	2021-11-22 17:59:12.376969958 +0400
+@@ -3327,11 +3327,11 @@
  
  #ifndef OPENSSL_NO_GOST
      if (ssl_has_cert(s, SSL_PKEY_GOST12_512)) {
@@ -3126,10 +3083,9 @@ index 7c7e597..31bff98 100644
          mask_a |= SSL_aGOST12;
      }
      if (ssl_has_cert(s, SSL_PKEY_GOST01)) {
-diff --git a/ssl/ssl_local.h b/ssl/ssl_local.h
-index 8ddbde7..ee707c8 100644
---- a/ssl/ssl_local.h
-+++ b/ssl/ssl_local.h
+diff -ru --unidirectional-new-file a/ssl/ssl_local.h b/ssl/ssl_local.h
+--- a/ssl/ssl_local.h	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/ssl_local.h	2021-11-22 17:59:12.372969839 +0400
 @@ -176,6 +176,8 @@
  # define SSL_kRSAPSK             0x00000040U
  # define SSL_kECDHEPSK           0x00000080U
@@ -3184,7 +3140,7 @@ index 8ddbde7..ee707c8 100644
  
  # define SSL_STRONG_MASK         0x0000001FU
  # define SSL_DEFAULT_MASK        0X00000020U
-@@ -1512,10 +1529,11 @@ typedef struct tls_group_info_st {
+@@ -1512,10 +1529,11 @@
  } TLS_GROUP_INFO;
  
  /* flags values */
@@ -3197,7 +3153,7 @@ index 8ddbde7..ee707c8 100644
  
  typedef struct cert_pkey_st CERT_PKEY;
  
-@@ -2043,8 +2061,17 @@ typedef enum downgrade_en {
+@@ -2043,8 +2061,17 @@
  #define TLSEXT_SIGALG_dsa_sha512                                0x0602
  #define TLSEXT_SIGALG_dsa_sha224                                0x0302
  #define TLSEXT_SIGALG_dsa_sha1                                  0x0202
@@ -3217,11 +3173,10 @@ index 8ddbde7..ee707c8 100644
  #define TLSEXT_SIGALG_gostr34102001_gostr3411                   0xeded
  
  #define TLSEXT_SIGALG_ed25519                                   0x0807
-diff --git a/ssl/statem/extensions_srvr.c b/ssl/statem/extensions_srvr.c
-index 3b07c6b..a874ab8 100644
---- a/ssl/statem/extensions_srvr.c
-+++ b/ssl/statem/extensions_srvr.c
-@@ -624,7 +624,7 @@ int tls_parse_ctos_key_share(SSL *s, PACKET *pkt, unsigned int context, X509 *x,
+diff -ru --unidirectional-new-file a/ssl/statem/extensions_srvr.c b/ssl/statem/extensions_srvr.c
+--- a/ssl/statem/extensions_srvr.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/statem/extensions_srvr.c	2021-11-22 17:59:12.392970434 +0400
+@@ -624,7 +624,7 @@
  
      if (s->hit && (s->ext.psk_kex_mode & TLSEXT_KEX_MODE_FLAG_KE_DHE) == 0)
          return 1;
@@ -3230,7 +3185,7 @@ index 3b07c6b..a874ab8 100644
      /* Sanity check */
      if (s->s3->peer_tmp != NULL) {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_TLS_PARSE_CTOS_KEY_SHARE,
-@@ -1623,7 +1623,9 @@ EXT_RETURN tls_construct_stoc_etm(SSL *s, WPACKET *pkt, unsigned int context,
+@@ -1623,7 +1623,9 @@
      if (s->s3->tmp.new_cipher->algorithm_mac == SSL_AEAD
          || s->s3->tmp.new_cipher->algorithm_enc == SSL_RC4
          || s->s3->tmp.new_cipher->algorithm_enc == SSL_eGOST2814789CNT
@@ -3241,7 +3196,7 @@ index 3b07c6b..a874ab8 100644
          s->ext.use_etm = 0;
          return EXT_RETURN_NOT_SENT;
      }
-@@ -1682,6 +1684,7 @@ EXT_RETURN tls_construct_stoc_key_share(SSL *s, WPACKET *pkt,
+@@ -1682,6 +1684,7 @@
                                          unsigned int context, X509 *x,
                                          size_t chainidx)
  {
@@ -3249,11 +3204,10 @@ index 3b07c6b..a874ab8 100644
  #ifndef OPENSSL_NO_TLS1_3
      unsigned char *encodedPoint;
      size_t encoded_pt_len = 0;
-diff --git a/ssl/statem/statem_clnt.c b/ssl/statem/statem_clnt.c
-index 64e392c..be113a7 100644
---- a/ssl/statem/statem_clnt.c
-+++ b/ssl/statem/statem_clnt.c
-@@ -3280,6 +3280,144 @@ static int tls_construct_cke_gost(SSL *s, WPACKET *pkt)
+diff -ru --unidirectional-new-file a/ssl/statem/statem_clnt.c b/ssl/statem/statem_clnt.c
+--- a/ssl/statem/statem_clnt.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/statem/statem_clnt.c	2021-11-22 17:59:12.392970434 +0400
+@@ -3280,6 +3280,144 @@
  #endif
  }
  
@@ -3398,7 +3352,7 @@ index 64e392c..be113a7 100644
  static int tls_construct_cke_srp(SSL *s, WPACKET *pkt)
  {
  #ifndef OPENSSL_NO_SRP
-@@ -3336,6 +3474,9 @@ int tls_construct_client_key_exchange(SSL *s, WPACKET *pkt)
+@@ -3336,6 +3474,9 @@
      } else if (alg_k & SSL_kGOST) {
          if (!tls_construct_cke_gost(s, pkt))
              goto err;
@@ -3408,11 +3362,10 @@ index 64e392c..be113a7 100644
      } else if (alg_k & SSL_kSRP) {
          if (!tls_construct_cke_srp(s, pkt))
              goto err;
-diff --git a/ssl/statem/statem_lib.c b/ssl/statem/statem_lib.c
-index 43d6fd5..25d05bb 100644
---- a/ssl/statem/statem_lib.c
-+++ b/ssl/statem/statem_lib.c
-@@ -410,7 +410,6 @@ MSG_PROCESS_RETURN tls_process_cert_verify(SSL *s, PACKET *pkt)
+diff -ru --unidirectional-new-file a/ssl/statem/statem_lib.c b/ssl/statem/statem_lib.c
+--- a/ssl/statem/statem_lib.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/statem/statem_lib.c	2021-11-22 17:59:12.388970315 +0400
+@@ -410,7 +410,6 @@
                  md == NULL ? "n/a" : EVP_MD_name(md));
  #endif
  
@@ -3420,7 +3373,7 @@ index 43d6fd5..25d05bb 100644
      /*
       * If key is GOST and len is exactly 64 or 128, it is signature without
       * length field (CryptoPro implementations at least till TLS 1.2)
-@@ -1527,8 +1526,6 @@ static int is_tls13_capable(const SSL *s)
+@@ -1527,8 +1526,6 @@
          switch (i) {
          case SSL_PKEY_DSA_SIGN:
          case SSL_PKEY_GOST01:
@@ -3429,11 +3382,10 @@ index 43d6fd5..25d05bb 100644
              continue;
          default:
              break;
-diff --git a/ssl/statem/statem_local.h b/ssl/statem/statem_local.h
-index e27c0c1..998aed2 100644
---- a/ssl/statem/statem_local.h
-+++ b/ssl/statem/statem_local.h
-@@ -153,6 +153,11 @@ __owur MSG_PROCESS_RETURN tls_process_next_proto(SSL *s, PACKET *pkt);
+diff -ru --unidirectional-new-file a/ssl/statem/statem_local.h b/ssl/statem/statem_local.h
+--- a/ssl/statem/statem_local.h	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/statem/statem_local.h	2021-11-22 17:59:12.392970434 +0400
+@@ -153,6 +153,11 @@
  __owur int tls_construct_new_session_ticket(SSL *s, WPACKET *pkt);
  MSG_PROCESS_RETURN tls_process_end_of_early_data(SSL *s, PACKET *pkt);
  
@@ -3445,11 +3397,10 @@ index e27c0c1..998aed2 100644
  
  /* Extension processing */
  
-diff --git a/ssl/statem/statem_srvr.c b/ssl/statem/statem_srvr.c
-index 14cb27e..a2e88c1 100644
---- a/ssl/statem/statem_srvr.c
-+++ b/ssl/statem/statem_srvr.c
-@@ -3446,6 +3446,93 @@ static int tls_process_cke_gost(SSL *s, PACKET *pkt)
+diff -ru --unidirectional-new-file a/ssl/statem/statem_srvr.c b/ssl/statem/statem_srvr.c
+--- a/ssl/statem/statem_srvr.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/statem/statem_srvr.c	2021-11-22 17:59:12.388970315 +0400
+@@ -3446,6 +3446,93 @@
  #endif
  }
  
@@ -3543,7 +3494,7 @@ index 14cb27e..a2e88c1 100644
  MSG_PROCESS_RETURN tls_process_client_key_exchange(SSL *s, PACKET *pkt)
  {
      unsigned long alg_k;
-@@ -3496,6 +3583,11 @@ MSG_PROCESS_RETURN tls_process_client_key_exchange(SSL *s, PACKET *pkt)
+@@ -3496,6 +3583,11 @@
              /* SSLfatal() already called */
              goto err;
          }
@@ -3555,11 +3506,10 @@ index 14cb27e..a2e88c1 100644
      } else {
          SSLfatal(s, SSL_AD_INTERNAL_ERROR,
                   SSL_F_TLS_PROCESS_CLIENT_KEY_EXCHANGE,
-diff --git a/ssl/t1_enc.c b/ssl/t1_enc.c
-index c85c0b0..eb36688 100644
---- a/ssl/t1_enc.c
-+++ b/ssl/t1_enc.c
-@@ -113,6 +113,11 @@ int tls1_change_cipher_state(SSL *s, int which)
+diff -ru --unidirectional-new-file a/ssl/t1_enc.c b/ssl/t1_enc.c
+--- a/ssl/t1_enc.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/t1_enc.c	2021-11-22 17:59:12.384970196 +0400
+@@ -113,6 +113,11 @@
          else
              s->mac_flags &= ~SSL_MAC_FLAG_READ_MAC_STREAM;
  
@@ -3571,7 +3521,7 @@ index c85c0b0..eb36688 100644
          if (s->enc_read_ctx != NULL) {
              reuse_dd = 1;
          } else if ((s->enc_read_ctx = EVP_CIPHER_CTX_new()) == NULL) {
-@@ -160,6 +165,11 @@ int tls1_change_cipher_state(SSL *s, int which)
+@@ -160,6 +165,11 @@
              s->mac_flags |= SSL_MAC_FLAG_WRITE_MAC_STREAM;
          else
              s->mac_flags &= ~SSL_MAC_FLAG_WRITE_MAC_STREAM;
@@ -3583,7 +3533,7 @@ index c85c0b0..eb36688 100644
          if (s->enc_write_ctx != NULL && !SSL_IS_DTLS(s)) {
              reuse_dd = 1;
          } else if ((s->enc_write_ctx = EVP_CIPHER_CTX_new()) == NULL) {
-@@ -298,11 +308,11 @@ int tls1_change_cipher_state(SSL *s, int which)
+@@ -298,11 +308,11 @@
              goto err;
          }
      } else {
@@ -3600,7 +3550,7 @@ index c85c0b0..eb36688 100644
      }
      /* Needed for "composite" AEADs, such as RC4-HMAC-MD5 */
      if ((EVP_CIPHER_flags(c) & EVP_CIPH_FLAG_AEAD_CIPHER) && *mac_secret_size
-@@ -438,6 +448,10 @@ size_t tls1_final_finish_mac(SSL *s, const char *str, size_t slen,
+@@ -438,6 +448,10 @@
  {
      size_t hashlen;
      unsigned char hash[EVP_MAX_MD_SIZE];
@@ -3611,7 +3561,7 @@ index c85c0b0..eb36688 100644
  
      if (!ssl3_digest_cached_records(s, 0)) {
          /* SSLfatal() already called */
-@@ -451,12 +465,12 @@ size_t tls1_final_finish_mac(SSL *s, const char *str, size_t slen,
+@@ -451,12 +465,12 @@
  
      if (!tls1_PRF(s, str, slen, hash, hashlen, NULL, 0, NULL, 0, NULL, 0,
                    s->session->master_key, s->session->master_key_length,
@@ -3626,11 +3576,10 @@ index c85c0b0..eb36688 100644
  }
  
  int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
-diff --git a/ssl/t1_lib.c b/ssl/t1_lib.c
-index 76b4baa..18679ce 100644
---- a/ssl/t1_lib.c
-+++ b/ssl/t1_lib.c
-@@ -169,6 +169,18 @@ static const TLS_GROUP_INFO nid_list[] = {
+diff -ru --unidirectional-new-file a/ssl/t1_lib.c b/ssl/t1_lib.c
+--- a/ssl/t1_lib.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/t1_lib.c	2021-11-22 17:59:12.372969839 +0400
+@@ -169,6 +169,18 @@
      {NID_brainpoolP512r1, 256, TLS_CURVE_PRIME}, /* brainpool512r1 (28) */
      {EVP_PKEY_X25519, 128, TLS_CURVE_CUSTOM}, /* X25519 (29) */
      {EVP_PKEY_X448, 224, TLS_CURVE_CUSTOM}, /* X448 (30) */
@@ -3649,7 +3598,7 @@ index 76b4baa..18679ce 100644
  };
  
  static const unsigned char ecformats_default[] = {
-@@ -184,6 +196,15 @@ static const uint16_t eccurves_default[] = {
+@@ -184,6 +196,15 @@
      30,                      /* X448 (30) */
      25,                      /* secp521r1 (25) */
      24,                      /* secp384r1 (24) */
@@ -3665,7 +3614,7 @@ index 76b4baa..18679ce 100644
  };
  
  static const uint16_t suiteb_curves[] = {
-@@ -196,6 +217,8 @@ const TLS_GROUP_INFO *tls1_group_id_lookup(uint16_t group_id)
+@@ -196,6 +217,8 @@
      /* ECC curves from RFC 4492 and RFC 7027 */
      if (group_id < 1 || group_id > OSSL_NELEM(nid_list))
          return NULL;
@@ -3674,7 +3623,7 @@ index 76b4baa..18679ce 100644
      return &nid_list[group_id - 1];
  }
  
-@@ -380,6 +403,33 @@ typedef struct {
+@@ -380,6 +403,33 @@
      int nid_arr[MAX_CURVELIST];
  } nid_cb_st;
  
@@ -3708,7 +3657,7 @@ index 76b4baa..18679ce 100644
  static int nid_cb(const char *elem, int len, void *arg)
  {
      nid_cb_st *narg = arg;
-@@ -395,6 +445,11 @@ static int nid_cb(const char *elem, int len, void *arg)
+@@ -395,6 +445,11 @@
      memcpy(etmp, elem, len);
      etmp[len] = 0;
      nid = EC_curve_nist2nid(etmp);
@@ -3720,7 +3669,7 @@ index 76b4baa..18679ce 100644
      if (nid == NID_undef)
          nid = OBJ_sn2nid(etmp);
      if (nid == NID_undef)
-@@ -670,8 +725,17 @@ static const uint16_t tls12_sigalgs[] = {
+@@ -670,8 +725,17 @@
      TLSEXT_SIGALG_dsa_sha512,
  #endif
  #ifndef OPENSSL_NO_GOST
@@ -3738,7 +3687,7 @@ index 76b4baa..18679ce 100644
      TLSEXT_SIGALG_gostr34102001_gostr3411,
  #endif
  };
-@@ -758,6 +822,34 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
+@@ -758,6 +822,34 @@
       NID_dsaWithSHA1, NID_undef},
  #endif
  #ifndef OPENSSL_NO_GOST
@@ -3773,7 +3722,7 @@ index 76b4baa..18679ce 100644
      {NULL, TLSEXT_SIGALG_gostr34102012_256_gostr34112012_256,
       NID_id_GostR3411_2012_256, SSL_MD_GOST12_256_IDX,
       NID_id_GostR3410_2012_256, SSL_PKEY_GOST12_256,
-@@ -766,6 +858,14 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
+@@ -766,6 +858,14 @@
       NID_id_GostR3411_2012_512, SSL_MD_GOST12_512_IDX,
       NID_id_GostR3410_2012_512, SSL_PKEY_GOST12_512,
       NID_undef, NID_undef},
@@ -3788,7 +3737,7 @@ index 76b4baa..18679ce 100644
      {NULL, TLSEXT_SIGALG_gostr34102001_gostr3411,
       NID_id_GostR3411_94, SSL_MD_GOST94_IDX,
       NID_id_GostR3410_2001, SSL_PKEY_GOST01,
-@@ -886,6 +986,24 @@ static const SIGALG_LOOKUP *tls1_get_legacy_sigalg(const SSL *s, int idx)
+@@ -886,6 +986,24 @@
                      }
                  }
              }
@@ -3813,7 +3762,7 @@ index 76b4baa..18679ce 100644
          } else {
              idx = s->cert->key - s->cert->pkeys;
          }
-@@ -1612,10 +1730,8 @@ static int tls12_sigalg_allowed(const SSL *s, int op, const SIGALG_LOOKUP *lu)
+@@ -1612,10 +1730,8 @@
      if (ssl_cert_is_disabled(lu->sig_idx))
          return 0;
  
@@ -3826,7 +3775,7 @@ index 76b4baa..18679ce 100644
          if (s->server && SSL_IS_TLS13(s))
              return 0;
          if (!s->server
-@@ -1643,7 +1759,7 @@ static int tls12_sigalg_allowed(const SSL *s, int op, const SIGALG_LOOKUP *lu)
+@@ -1643,7 +1759,7 @@
                  if (ssl_cipher_disabled(s, c, SSL_SECOP_CIPHER_SUPPORTED, 0))
                      continue;
  
@@ -3835,11 +3784,10 @@ index 76b4baa..18679ce 100644
                      break;
              }
              if (i == num)
-diff --git a/ssl/t1_trce.c b/ssl/t1_trce.c
-index 5c84339..0100509 100644
---- a/ssl/t1_trce.c
-+++ b/ssl/t1_trce.c
-@@ -443,6 +443,9 @@ static const ssl_trace_tbl ssl_ciphers_tbl[] = {
+diff -ru --unidirectional-new-file a/ssl/t1_trce.c b/ssl/t1_trce.c
+--- a/ssl/t1_trce.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/t1_trce.c	2021-11-22 17:59:12.368969720 +0400
+@@ -443,6 +443,9 @@
      {0xFEFF, "SSL_RSA_FIPS_WITH_3DES_EDE_CBC_SHA"},
      {0xFF85, "GOST2012-GOST8912-GOST8912"},
      {0xFF87, "GOST2012-NULL-GOST12"},
@@ -3849,7 +3797,7 @@ index 5c84339..0100509 100644
  };
  
  /* Compression methods */
-@@ -522,6 +525,13 @@ static const ssl_trace_tbl ssl_groups_tbl[] = {
+@@ -522,6 +525,13 @@
      {28, "brainpoolP512r1"},
      {29, "ecdh_x25519"},
      {30, "ecdh_x448"},
@@ -3863,7 +3811,7 @@ index 5c84339..0100509 100644
      {256, "ffdhe2048"},
      {257, "ffdhe3072"},
      {258, "ffdhe4096"},
-@@ -571,6 +581,8 @@ static const ssl_trace_tbl ssl_sigalg_tbl[] = {
+@@ -571,6 +581,8 @@
      {TLSEXT_SIGALG_dsa_sha1, "dsa_sha1"},
      {TLSEXT_SIGALG_gostr34102012_256_gostr34112012_256, "gost2012_256"},
      {TLSEXT_SIGALG_gostr34102012_512_gostr34112012_512, "gost2012_512"},
@@ -3872,7 +3820,7 @@ index 5c84339..0100509 100644
      {TLSEXT_SIGALG_gostr34102001_gostr3411, "gost2001_gost94"},
  };
  
-@@ -584,7 +596,9 @@ static const ssl_trace_tbl ssl_ctype_tbl[] = {
+@@ -584,7 +596,9 @@
      {20, "fortezza_dms"},
      {64, "ecdsa_sign"},
      {65, "rsa_fixed_ecdh"},
@@ -3883,7 +3831,7 @@ index 5c84339..0100509 100644
  };
  
  static const ssl_trace_tbl ssl_psk_kex_modes_tbl[] = {
-@@ -1072,6 +1086,10 @@ static int ssl_get_keyex(const char **pname, const SSL *ssl)
+@@ -1072,6 +1086,10 @@
          *pname = "GOST";
          return SSL_kGOST;
      }
@@ -3894,7 +3842,7 @@ index 5c84339..0100509 100644
      *pname = "UNKNOWN";
      return 0;
  }
-@@ -1114,7 +1132,16 @@ static int ssl_print_client_keyex(BIO *bio, int indent, const SSL *ssl,
+@@ -1114,7 +1132,16 @@
          if (!ssl_print_hexbuf(bio, indent + 2, "ecdh_Yc", 1, &msg, &msglen))
              return 0;
          break;
@@ -3912,11 +3860,10 @@ index 5c84339..0100509 100644
      }
  
      return !msglen;
-diff --git a/ssl/tls13_enc.c b/ssl/tls13_enc.c
-index 86754dc..5224092 100644
---- a/ssl/tls13_enc.c
-+++ b/ssl/tls13_enc.c
-@@ -421,6 +421,21 @@ static int derive_secret_key_and_iv(SSL *s, int sending, const EVP_MD *md,
+diff -ru --unidirectional-new-file a/ssl/tls13_enc.c b/ssl/tls13_enc.c
+--- a/ssl/tls13_enc.c	2020-04-21 16:22:39.000000000 +0400
++++ b/ssl/tls13_enc.c	2021-11-22 17:59:12.376969958 +0400
+@@ -421,6 +421,21 @@
          goto err;
      }
  
@@ -3938,11 +3885,10 @@ index 86754dc..5224092 100644
      return 1;
   err:
      OPENSSL_cleanse(key, sizeof(key));
-diff --git a/util/libcrypto.num b/util/libcrypto.num
-index 876b7ca..4146d7b 100644
---- a/util/libcrypto.num
-+++ b/util/libcrypto.num
-@@ -4587,3 +4587,8 @@ EVP_PKEY_meth_set_digestverify          4540	1_1_1e	EXIST::FUNCTION:
+diff -ru --unidirectional-new-file a/util/libcrypto.num b/util/libcrypto.num
+--- a/util/libcrypto.num	2020-04-21 16:22:39.000000000 +0400
++++ b/util/libcrypto.num	2021-11-22 17:59:12.400970671 +0400
+@@ -4587,3 +4587,8 @@
  EVP_PKEY_meth_get_digestverify          4541	1_1_1e	EXIST::FUNCTION:
  EVP_PKEY_meth_get_digestsign            4542	1_1_1e	EXIST::FUNCTION:
  RSA_get0_pss_params                     4543	1_1_1e	EXIST::FUNCTION:RSA
