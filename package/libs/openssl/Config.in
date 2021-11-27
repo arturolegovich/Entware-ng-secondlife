@@ -232,8 +232,10 @@ config OPENSSL_WITH_RFC3779
 comment "Engine/Hardware Support"
 
 config OPENSSL_ENGINE
-	bool "Enable engine support"
+	bool
 	default y
+	prompt "Enable engine support"
+	select PACKAGE_libopenssl-gost_engine
 	help
 		This enables alternative cryptography implementations,
 		most commonly for interfacing with external crypto devices,
@@ -292,16 +294,5 @@ config OPENSSL_WITH_ASYNC
 		Enables async-aware applications to be able to use OpenSSL to
 		initiate crypto operations asynchronously. In order to work
 		this will require the presence of an async capable engine.
-
-config OPENSSL_WITH_GOST
-	bool
-	prompt "Prepare library for GOST engine"
-	depends on OPENSSL_ENGINE
-	help
-		This option prepares the library to accept engine support
-		for Russian GOST crypto algorithms.
-		The gost engine is not included in standard openwrt feeds.
-		To build such engine yourself, see:
-		https://github.com/gost-engine/engine
 
 endif
