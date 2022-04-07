@@ -17,4 +17,4 @@ Browse through ~2000 packages for different platforms:
 Feel free to [ask for new packages](https://github.com/Entware-ng/Entware-ng/issues) or report any bugs you've found.
 
 
-Now, we have openssl 1.1.1g patched for Russian gost 2012 and openvpn 2.4.7 for most old build. My build is for me only, i'm tested this every dey on my work and home. i'l hame to make all programs from my current router, many programs can't work on my old router, i rebuild many of them, but havaent source coude now)
+Now, we have openssl 1.1.1g patched for Russian gost 2012 and openvpn 2.4.7 for most old build. My build is for me only, i'm tested this every day on my work and home. i'l hame to make all programs from my current router, many programs can't work on my old router, i rebuild many of them, but havaent source coude now)
