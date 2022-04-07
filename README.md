@@ -19,5 +19,5 @@ Feel free to [ask for new packages](https://github.com/Entware-ng/Entware-ng/iss
 [EN]
 Now, we have openssl 1.1.1g patched for Russian gost 2012 and openvpn 2.4.7 for most old build. I rebuild many programs from entware-ng, but, i lose source repo (. Now, I make new repo, with my new brain )). A do not known how make automation, if you know how git-automation-build work, teach me please? i'l make greatest automation build-test documentation for free-linux servers, without paying.
 
-[RU]
+[RU]  - Перевод с английского на русский))
 Теперь у нас есть пропатченный openssl 1.1.1g для русского госта 2012 и openvpn 2.4.7 для большинства старых сборок. Я пересобираю многие программы из entware-ng, но теряю исходный репозиторий (сейчас я создаю новый репозиторий с моим новым мозгом)). А не знаете, как сделать автоматизацию, если знаете, как работает git-automation-build, научите меня, пожалуйста? Я сделаю самую лучшую документацию по автоматизации сборки и тестирования для серверов с бесплатным Linux, не платя.
